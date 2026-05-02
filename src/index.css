@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    @apply bg-white text-black font-sans antialiased;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { @apply bg-uber-gray-50; }
+  ::-webkit-scrollbar-thumb { @apply bg-uber-gray-300 rounded-full; }
+}
+
+@layer utilities {
+  .uber-input {
+    @apply w-full bg-uber-gray-50 text-black placeholder-uber-gray-400 rounded-lg px-4 h-12 text-sm outline-none transition-colors;
+  }
+  .uber-input:focus {
+    @apply bg-uber-gray-100;
+  }
+
+  .uber-btn-primary {
+    @apply bg-black text-white font-semibold rounded-lg px-6 h-12 text-sm transition-colors active:scale-95;
+  }
+  .uber-btn-primary:hover { @apply bg-uber-gray-800; }
+  .uber-btn-primary:disabled { @apply bg-uber-gray-300 cursor-not-allowed; }
+
+  .uber-btn-secondary {
+    @apply bg-uber-gray-100 text-black font-semibold rounded-lg px-6 h-12 text-sm transition-colors active:scale-95;
+  }
+  .uber-btn-secondary:hover { @apply bg-uber-gray-200; }
+
+  .uber-card {
+    @apply bg-white border border-uber-gray-200 rounded-xl;
+  }
+
+  .uber-card-hover {
+    @apply uber-card cursor-pointer transition-all duration-150;
+  }
+  .uber-card-hover:hover { @apply border-uber-gray-400 bg-uber-gray-50; }
+}

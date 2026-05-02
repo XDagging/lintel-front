@@ -1,0 +1,136 @@
+import axios from 'axios';
+
+export const api = axios.create({
+  baseURL: '/api',
+  headers: { 'Content-Type': 'application/json' },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('lintel_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('lintel_token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  }
+);
+
+export type ServiceType =
+  | 'gutter-cleaning'
+  | 'window-cleaning'
+  | 'pressure-washing'
+  | 'house-cleaning-standard'
+  | 'house-cleaning-deep'
+  | 'lawn-mowing';
+
+export interface Service {
+  id: ServiceType;
+  name: string;
+  description: string;
+  price: number;
+  duration: string;
+  icon: string;
+}
+
+export interface Job {
+  uuid: string;
+  address: string;
+  serviceType: ServiceType | 'bundle';
+  serviceTypes?: ServiceType[];   // populated on bundle jobs
+  inbound_request: string;
+  outbound_request?: string;
+  price: number;
+  tipAmount?: number;
+  status: 'open' | 'accepted' | 'in-progress' | 'completed' | 'confirmed' | 'disputed' | 'cancelled';
+  scheduledAt?: string;
+  notes?: string;
+  isRated?: boolean;
+  is_completed: boolean;
+  createdAt: string;
+}
+
+export interface Worker {
+  uuid: string;
+  name: string;
+  rating: number;
+  ratingCount: number;
+  img?: string;
+  bio?: string;
+  promoCode: string;
+  isAvailable: boolean;
+  stripeOnboardingComplete: boolean;
+}
+
+export const services = {
+  list: () => api.get<Service[]>('/services'),
+};
+
+export const auth = {
+  google: (idToken: string) => api.post<{ token: string; user: Record<string, unknown> }>('/auth/google', { idToken }),
+  me: () => api.get('/auth/me'),
+};
+
+export interface SavedCard {
+  id: string;
+  last4: string;
+  brand: string;
+  exp_month: number;
+  exp_year: number;
+}
+
+export const jobs = {
+  create: (data: {
+    serviceType: ServiceType;
+    address: string;
+    scheduledAt?: string;
+    notes?: string;
+    promoCode?: string;
+    paymentMethodId?: string;
+  }) => api.post<{ job: Job; clientSecret: string }>('/jobs', data),
+  createBundle: (data: {
+    serviceTypes: ServiceType[];
+    address: string;
+    scheduledAt?: string;
+    notes?: string;
+    promoCode?: string;
+    paymentMethodId?: string;
+  }) => api.post<{ job: Job }>('/jobs/bundle', data),
+  list: () => api.get<Job[]>('/jobs'),
+  get: (id: string, serviceType: ServiceType | 'bundle') =>
+    api.get<Job>(`/jobs/${id}`, { params: { serviceType } }),
+  getOpen: () => api.get<Job[]>('/jobs/open'),
+  accept: (id: string, serviceType: ServiceType | 'bundle') =>
+    api.post(`/jobs/${id}/accept`, { serviceType }),
+  complete: (id: string, serviceType: ServiceType | 'bundle') =>
+    api.post<{ confirmationCode: string }>(`/jobs/${id}/complete`, { serviceType }),
+  regenerateCode: (id: string, serviceType: ServiceType | 'bundle') =>
+    api.post<{ confirmationCode: string }>(`/jobs/${id}/regenerate-code`, { serviceType }),
+  confirm: (id: string, serviceType: ServiceType | 'bundle', confirmationCode: string) =>
+    api.post(`/jobs/${id}/confirm`, { serviceType, confirmationCode }),
+  tip: (id: string, serviceType: ServiceType | 'bundle', tipAmount: number, paymentMethodId?: string) =>
+    api.post<{ success: boolean }>(`/jobs/${id}/tip`, { serviceType, tipAmount, paymentMethodId }),
+  dispute: (id: string, serviceType: ServiceType | 'bundle', reason: string) =>
+    api.post(`/jobs/${id}/dispute`, { serviceType, reason }),
+  rate: (id: string, serviceType: ServiceType | 'bundle', rating: number) =>
+    api.post<{ success: boolean; newRating: number; ratingCount: number }>(`/jobs/${id}/rate`, { serviceType, rating }),
+};
+
+export const workers = {
+  profile: () => api.get<Worker>('/workers/profile'),
+  updateProfile: (data: FormData) =>
+    api.put('/workers/profile', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  stripeOnboarding: () => api.get<{ url: string }>('/workers/stripe/onboarding-link'),
+};
+
+export const users = {
+  updateProfile: (data: { address?: string; expoPushToken?: string; webPushSubscription?: string }) =>
+    api.put('/users/profile', data),
+  getSavedCard: () => api.get<{ card: SavedCard | null }>('/users/saved-card'),
+};
