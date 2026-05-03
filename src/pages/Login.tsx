@@ -30,10 +30,10 @@ export default function Login() {
     <div className="min-h-screen bg-white flex flex-col lg:flex-row">
       {/* Left — branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-black flex-col justify-between p-16">
-      <div className='w-2/6 border-2 p-3 rounded-lg'>
+      <div className='w-2/6 border p-3 rounded-lg'>
 
         <Link to="/" className='mb-4'>
-          <p className='text-white mb-2'>Quotes Right at your door</p>
+          {/* <p className='text-white mb-2'>Quotes Right at your door</p> */}
         
 
       

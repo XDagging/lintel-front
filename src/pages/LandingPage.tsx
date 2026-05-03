@@ -1,21 +1,46 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import {
-  MapPin, ChevronRight, Wind, Droplets, Sparkles,
-  Home, Scissors, CheckCircle, Clock, Shield, Star, ArrowRight,
-} from 'lucide-react';
+import { MapPin, Shield, Clock, CheckCircle, ChevronRight, ArrowRight, Star } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useBookingStore } from '../store/bookingStore';
 import { AddressSearch } from '../components/AddressSearch';
 import logo from '../assets/logo.jpeg';
 
 const SERVICES = [
-  { id: 'gutter-cleaning',         name: 'Gutter Cleaning',   desc: 'Keep gutters clear and flowing. Remove debris and ensure proper drainage.',              price: '$89',  Icon: Wind },
-  { id: 'window-cleaning',         name: 'Window Cleaning',   desc: 'Crystal-clear windows inside and out. Streak-free shine, every time.',                  price: '$119', Icon: Droplets },
-  { id: 'pressure-washing',        name: 'Pressure Washing',  desc: 'Blast away dirt, grime, and mildew from driveways, decks, and siding.',                 price: '$149', Icon: Sparkles },
-  { id: 'house-cleaning-standard', name: 'House Cleaning',    desc: 'A thorough clean of every room. Your home, spotless.',                                   price: '$129', Icon: Home },
-  { id: 'house-cleaning-deep',     name: 'Deep Clean',        desc: 'The most thorough clean possible — perfect for move-ins and special occasions.',          price: '$229', Icon: Sparkles },
-  { id: 'lawn-mowing',             name: 'Lawn Mowing',       desc: 'A perfectly manicured lawn without lifting a finger.',                                   price: '$99',  Icon: Scissors },
+  { id: 'gutter-cleaning',         code: 'LNT-001', name: 'Gutter Cleaning',   desc: 'Clear out leaves, debris, and blockages so water drains away from your home — not into it.',  price: '$89',  icon: GutterIcon },
+  { id: 'window-cleaning',         code: 'LNT-002', name: 'Window Cleaning',   desc: 'Streak-free windows, inside and out. We bring the supplies — you just enjoy the view.',       price: '$119', icon: WindowIcon },
+  { id: 'pressure-washing',        code: 'LNT-003', name: 'Pressure Washing',  desc: 'Blast years of grime off your driveway, patio, deck, or siding. Results you can see.',        price: '$149', icon: PressureIcon },
+  { id: 'house-cleaning-standard', code: 'LNT-004', name: 'House Cleaning',    desc: 'A thorough clean of every room — floors, surfaces, bathrooms, and kitchen. Top-to-bottom.',   price: '$129', icon: HouseIcon },
+  { id: 'house-cleaning-deep',     code: 'LNT-005', name: 'Deep Clean',        desc: 'Our most thorough package. Perfect for move-ins, move-outs, or a full seasonal reset.',       price: '$229', icon: DeepIcon },
+  { id: 'lawn-mowing',             code: 'LNT-006', name: 'Lawn Mowing',       desc: 'A neatly cut, edged lawn without lifting a finger. Consistent results every visit.',           price: '$99',  icon: LawnIcon },
+];
+
+const TESTIMONIALS = [
+  {
+    name: 'Marcus Chen',
+    role: 'Homeowner · Bethesda, MD',
+    rating: 5,
+    quote: '"I was skeptical about a high schooler cleaning my gutters, but Marcus showed up on time, did a thorough job, and left my driveway spotless. Will book again."',
+  },
+  {
+    name: 'Sarah Jenkins',
+    role: 'Homeowner · Silver Spring, MD',
+    rating: 5,
+    quote: '"Lintel vetted the student before sending them over. Knowing the work is insured made all the difference. My windows look better than when a professional did them."',
+  },
+  {
+    name: 'David Miller',
+    role: 'Homeowner · Rockville, MD',
+    rating: 4,
+    quote: '"Booked a deep clean on a Tuesday, had someone at my door Thursday morning. The whole process felt as smooth as ordering an Uber. Genuinely impressed."',
+  },
+];
+
+const STATS = [
+  { value: '50+',  label: 'Homes Completed' },
+  { value: '4.9★', label: 'Average Rating' },
+  { value: '$1M',  label: 'Liability Coverage' },
+  { value: '100%', label: 'Background Checked' },
 ];
 
 export default function LandingPage() {
@@ -35,113 +60,210 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-white text-black" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
 
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src={logo} alt="lintel" className="h-8 w-8 rounded-full object-cover" />
-            <span className="text-white text-xl font-black tracking-tight">lintel</span>
+            <img src={logo} alt="lintel" className="h-7 w-7 rounded-full object-cover" />
+            <span className="text-black text-sm font-bold tracking-[0.15em] uppercase">LINTEL</span>
           </Link>
 
-          <nav className="hidden md:flex items-center">
-            <a href="#services"     className="px-4 h-10 flex items-center text-white/70 hover:text-white text-sm font-medium transition-colors">Services</a>
-            <a href="#how-it-works" className="px-4 h-10 flex items-center text-white/70 hover:text-white text-sm font-medium transition-colors">How it works</a>
-            <Link to="/worker/register" className="px-4 h-10 flex items-center text-white/70 hover:text-white text-sm font-medium transition-colors">Earn with us</Link>
-            <Link to="/blog" className="px-4 h-10 flex items-center text-white/70 hover:text-white text-sm font-medium transition-colors">Blog</Link>
+          <nav className="hidden md:flex items-center gap-1">
+            <a href="#services" className="px-4 h-9 flex items-center text-black/50 hover:text-black text-[11px] font-semibold tracking-[0.12em] transition-colors uppercase">Services</a>
+            <a href="#trust"    className="px-4 h-9 flex items-center text-black/50 hover:text-black text-[11px] font-semibold tracking-[0.12em] transition-colors uppercase">How It Works</a>
+            <Link to="/worker/register" className="px-4 h-9 flex items-center text-black/50 hover:text-black text-[11px] font-semibold tracking-[0.12em] transition-colors uppercase">Earn With Us</Link>
+            <Link to="/blog/" className="px-4 h-9 flex items-center text-black/50 hover:text-black text-[11px] font-semibold tracking-[0.12em] transition-colors uppercase">Learn about us</Link>
+        
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link to="/login" className="px-4 h-9 flex items-center text-white text-sm font-semibold rounded-full hover:bg-white/10 transition-colors">
-              Log in
+            <Link to="/login" className="px-4 h-8 flex items-center text-black text-[11px] font-semibold tracking-[0.1em] uppercase hover:bg-black/5 transition-colors">
+              LOG IN
             </Link>
-            <Link to="/login" className="px-4 h-9 flex items-center bg-white text-black text-sm font-semibold rounded-full hover:bg-white/90 transition-colors">
-              Sign up
+            <Link to="/login" className="px-4 h-8 flex items-center bg-black text-white text-[11px] font-semibold tracking-[0.1em] uppercase hover:bg-black/80 transition-colors">
+              SIGN UP
             </Link>
           </div>
         </div>
       </header>
 
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <section className="pt-16 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center gap-12 py-16">
+      <section className="pt-14 min-h-screen flex items-center relative overflow-hidden">
+        {/* Dot grid background */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'radial-gradient(circle, #00000015 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }} />
 
-          {/* Left — copy + address input */}
+        <div className="relative max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center gap-16 py-24">
+
+          {/* Left */}
           <div className="flex-1 max-w-xl">
-            <div className="flex items-center gap-2 mb-6">
-              <MapPin className="w-4 h-4 text-uber-gray-400" />
-              <span className="text-sm text-uber-gray-500 font-medium">Available in your area</span>
+            <div className="inline-flex items-center gap-2 border border-black/20 px-3 py-1 mb-8">
+              <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
+              <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-black/60 font-mono">
+                50+ Homes Completed · Fully Insured
+              </span>
             </div>
 
-            <h1 className="text-5xl lg:text-6xl font-black text-black leading-[1.05] mb-10">
-              Home services,<br />on demand.
+            <h1 className="text-4xl lg:text-5xl font-black text-black leading-[1.08] mb-5 tracking-tight uppercase">
+              Home Services,<br />On Demand.
             </h1>
 
-            {/* Address box */}
-            <div className="rounded-2xl border-2 border-uber-gray-200 bg-white shadow-sm max-w-md overflow-visible">
+            <p className="text-sm text-black/50 leading-relaxed mb-10 max-w-sm">
+              Vetted, background-checked students — fully insured, always on time.
+              Book a gutter clean, deep clean, lawn mow, or pressure wash in under two minutes.
+            </p>
+
+            {/* Address input */}
+            <div className="border border-black/20 bg-white max-w-md">
               <div className="p-4 pb-3">
-                <p className="text-xs font-bold text-uber-gray-400 uppercase tracking-widest mb-3">Your address</p>
-                <AddressSearch
-                  value={heroAddress}
-                  onChange={setHeroAddress}
-                  onConfirm={handleAddressConfirm}
-                  placeholder="Enter your home address"
-                />
+                <p className="text-[10px] font-mono font-semibold text-black/40 tracking-[0.2em] uppercase mb-3">
+                  Your Address
+                </p>
+                <div className="flex items-center gap-2">
+                  {/* <MapPin className="w-3.5 h-3.5 text-black/30 flex-shrink-0" /> */}
+                  <AddressSearch
+                    value={heroAddress}
+                    onChange={setHeroAddress}
+                    onConfirm={handleAddressConfirm}
+                    placeholder="Enter your home address..."
+                  />
+                </div>
               </div>
               <div className="px-4 pb-4">
                 <button
                   onClick={() => handleAddressConfirm(heroAddress)}
                   disabled={!heroAddress.trim()}
-                  className="w-full h-12 bg-black text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-uber-gray-800 transition-colors disabled:bg-uber-gray-200 disabled:text-uber-gray-400 disabled:cursor-not-allowed"
+                  className="w-full h-11 bg-black text-white font-bold text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 hover:bg-black/80 transition-colors disabled:bg-black/20 disabled:cursor-not-allowed"
                 >
-                  See prices
-                  <ChevronRight className="w-4 h-4" />
+                  SEE PRICES
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
 
-            <p className="mt-4 text-sm text-uber-gray-500">
+            <p className="mt-4 text-[12px] text-black/35 font-mono">
               Already have an account?{' '}
-              <Link to="/login" className="text-black font-semibold underline underline-offset-2 hover:no-underline">
-                Log in to see your recent activity
-              </Link>
+              <Link to="/login" className="underline underline-offset-2 hover:text-black/60 transition-colors">Log in</Link>
             </p>
           </div>
 
-          {/* Right — illustration */}
-          <div className="flex-1 flex justify-center lg:justify-end w-full">
-            <HeroVisual />
+          {/* Right — home illustration */}
+          <div className="flex-1 flex justify-center lg:justify-end">
+            <HomeVisual />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats bar ───────────────────────────────────────────────────── */}
+      <section className="border-y border-black/10 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-black/10">
+            {STATS.map(({ value, label }) => (
+              <div key={label} className="px-8 py-7 text-center">
+                <p className="text-2xl font-black text-black tracking-tight">{value}</p>
+                <p className="text-[11px] font-mono text-black/40 tracking-[0.12em] uppercase mt-1">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Trust pillars ───────────────────────────────────────────────── */}
+      <section id="trust" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-12">
+            <p className="text-[10px] font-mono text-black/35 tracking-[0.2em] uppercase mb-1">Why Lintel</p>
+            <h2 className="text-2xl font-black text-black tracking-tight uppercase">Built Around Your Peace of Mind</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-black/10">
+            {[
+              {
+                Icon: Shield,
+                title: 'Fully Insured',
+                desc: 'Every job is covered under our $1M general liability policy. If something gets damaged, we make it right — no questions asked.',
+              },
+              {
+                Icon: CheckCircle,
+                title: 'Background Verified',
+                desc: 'Every student on our network passes a full identity check and background screen before taking their first booking. Your home, your rules.',
+              },
+              {
+                Icon: Star,
+                title: 'Rated After Every Job',
+                desc: 'Homeowners rate each visit. Workers below 4.5★ are paused and reviewed. We maintain a 4.9★ network average.',
+              },
+              {
+                Icon: Clock,
+                title: 'On-Time Guarantee',
+                desc: "Your pro shows up in the booked window or your next booking is discounted. We respect your schedule.",
+              },
+              {
+                Icon: CheckCircle,
+                title: 'Pay After Confirmation',
+                desc: 'Your card is only charged once you confirm the job is complete. You hold the confirmation code — no code, no charge.',
+              },
+              {
+                Icon: Shield,
+                title: 'Satisfaction Guarantee',
+                desc: "Not happy with the result? Message us within 24 hours and we'll send someone back, free of charge.",
+              },
+            ].map(({ Icon, title, desc }) => (
+              <div key={title} className="bg-white p-8">
+                <div className="w-9 h-9 border border-black/15 flex items-center justify-center mb-5">
+                  <Icon className="w-4 h-4 text-black" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-bold text-black mb-2">{title}</p>
+                <p className="text-[12px] text-black/45 leading-relaxed">{desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ── Services ────────────────────────────────────────────────────── */}
-      <section id="services" className="py-20 bg-white">
+      <section id="services" className="py-20 border-t border-black/10 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-black text-black mb-2">Our services</h2>
-          <p className="text-uber-gray-500 text-lg mb-10">Trusted professionals for every home need.</p>
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <p className="text-[10px] font-mono text-black/35 tracking-[0.2em] uppercase mb-1">What We Offer</p>
+              <h2 className="text-2xl font-black text-black tracking-tight uppercase">Our Services</h2>
+            </div>
+            <div className="text-right hidden md:block">
+              <p className="text-[10px] font-mono text-black/25 tracking-wider">ALL WORK INSURED</p>
+              <p className="text-[10px] font-mono text-black/25 tracking-wider">6 SERVICES AVAILABLE</p>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SERVICES.map(({ id, name, desc, price, Icon }) => (
-              <div key={id} className="bg-uber-gray-50 rounded-2xl p-6 flex flex-col gap-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="font-bold text-black text-lg leading-tight">{name}</p>
-                    <p className="text-uber-gray-500 text-sm mt-1 leading-relaxed">{desc}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/10">
+            {SERVICES.map(({ id, code, name, desc, price, icon: ServiceIcon }) => (
+              <div key={id} className="bg-white p-6 flex flex-col gap-5">
+                <div className="flex items-start justify-between">
+                  <div className="w-9 h-9 border border-black/15 flex items-center justify-center">
+                    <ServiceIcon />
                   </div>
-                  <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-7 h-7 text-black" />
-                  </div>
+                  <span className="text-[10px] font-mono text-black/25 tracking-wider">{code}</span>
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-black mb-1.5">{name}</p>
+                  <p className="text-[12px] text-black/45 leading-relaxed">{desc}</p>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-black/8">
+                  <span className="text-[11px] font-bold text-black tracking-wider uppercase">
+                    From {price}
+                  </span>
                   <button
                     onClick={() => navigate('/login')}
-                    className="px-4 h-9 bg-white border border-uber-gray-300 text-black text-sm font-semibold rounded-full hover:border-black transition-colors"
+                    className="px-4 h-7 border border-black/20 text-[10px] font-bold tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-colors"
                   >
-                    Details
+                    BOOK NOW
                   </button>
-                  <span className="text-sm font-bold text-uber-gray-500">From {price}</span>
                 </div>
               </div>
             ))}
@@ -150,341 +272,289 @@ export default function LandingPage() {
       </section>
 
       {/* ── How it works ────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 bg-uber-gray-50">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-12 items-stretch">
-
-          {/* Mint feature card */}
-          <div className="flex-1 bg-[#D4EDE8] rounded-3xl p-10 flex flex-col justify-between min-h-[420px]">
-            <div>
-              <div className="flex gap-3 mb-8">
-                <span className="px-5 h-10 flex items-center bg-black text-white text-sm font-bold rounded-full">Book now</span>
-                <span className="px-5 h-10 flex items-center bg-white/70 text-black text-sm font-bold rounded-full">Schedule ahead</span>
-              </div>
-              <h3 className="text-4xl font-black text-black leading-tight mb-4">
-                Get your home<br />right with lintel
-              </h3>
-              <p className="text-uber-gray-600 text-base leading-relaxed">
-                Enter your address, choose a service, and a vetted professional comes to you — on your schedule.
-              </p>
-            </div>
-            <div className="mt-8 bg-white rounded-2xl p-5 shadow-sm">
-              <p className="text-xs font-bold text-uber-gray-400 uppercase tracking-widest mb-3">Your address</p>
-              <div className="h-11 bg-uber-gray-50 rounded-lg flex items-center px-4 gap-3 text-sm text-uber-gray-400 mb-3">
-                <MapPin className="w-4 h-4" />
-                <span>Enter your address</span>
-              </div>
-              <button
-                onClick={() => navigate('/login')}
-                className="w-full h-11 bg-black text-white font-bold text-sm rounded-xl hover:bg-uber-gray-800 transition-colors"
-              >
-                Get started
-              </button>
-            </div>
+      <section className="py-20 border-t border-black/10 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-12">
+            <p className="text-[10px] font-mono text-black/35 tracking-[0.2em] uppercase mb-1">The Process</p>
+            <h2 className="text-2xl font-black text-black tracking-tight uppercase">As Easy as Ordering a Ride</h2>
           </div>
 
-          {/* Benefits list */}
-          <div className="flex-1 flex flex-col justify-center">
-            <h3 className="text-2xl font-black text-black mb-8">Benefits</h3>
-            <div className="space-y-7">
-              {[
-                { Icon: CheckCircle, title: 'Vetted professionals',    desc: 'Every worker is background-checked and rated by your neighbors.' },
-                { Icon: Clock,       title: 'Book in minutes',         desc: 'Select your service, confirm your address, and you\'re done.' },
-                { Icon: Shield,      title: 'Pay after confirmation',  desc: 'Your card is only charged once you confirm the job is complete.' },
-                { Icon: Star,        title: 'Satisfaction guaranteed', desc: 'Not happy with the work? We\'ll make it right, every time.' },
-              ].map(({ Icon, title, desc }) => (
-                <div key={title} className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-uber-gray-100 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-black" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-black">{title}</p>
-                    <p className="text-uber-gray-500 text-sm mt-0.5 leading-relaxed">{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-black/10">
+            {[
+              { step: '01', title: 'Enter Your Address', desc: 'Tell us where you are. We\'ll show you available services, live pricing, and nearby pros.' },
+              { step: '02', title: 'Pick a Time', desc: 'Choose same-day or schedule ahead. Your pro arrives in the booked window — guaranteed.' },
+              { step: '03', title: 'Confirm & Pay', desc: 'Approve the completed work with your unique code. Only then is your payment released to the pro.' },
+            ].map(({ step, title, desc }) => (
+              <div key={step} className="bg-white p-8">
+                <p className="text-[10px] font-mono text-black/25 tracking-[0.2em] mb-4">{step}</p>
+                <p className="text-sm font-bold text-black mb-2">{title}</p>
+                <p className="text-[12px] text-black/45 leading-relaxed">{desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── Login CTA ───────────────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1">
-            <h2 className="text-4xl font-black text-black leading-tight mb-4">
-              Log in to see your<br />account details
-            </h2>
-            <p className="text-uber-gray-500 text-lg mb-8">
-              View past bookings, tailored suggestions, support resources, and more.
-            </p>
-            <div className="flex items-center gap-5 flex-wrap">
-              <Link
-                to="/login"
-                className="px-6 h-12 bg-black text-white font-bold text-sm rounded-xl flex items-center hover:bg-uber-gray-800 transition-colors"
-              >
-                Log in to your account
-              </Link>
-              <Link to="/login" className="text-sm font-semibold text-black underline underline-offset-2 hover:no-underline">
-                Create an account
-              </Link>
+      {/* ── Testimonials ────────────────────────────────────────────────── */}
+      <section className="py-20 bg-black border-t border-black/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <p className="text-[10px] font-mono text-white/30 tracking-[0.2em] uppercase mb-1">Homeowner Reviews</p>
+              <h2 className="text-2xl font-black text-white tracking-tight uppercase">What Customers Say</h2>
+            </div>
+            <div className="hidden md:flex items-center gap-1">
+              <Star className="w-3.5 h-3.5 text-white/60 fill-white/60" />
+              <span className="text-white/50 text-[12px] font-mono">4.9 avg across 50+ jobs</span>
             </div>
           </div>
-          <div className="flex-1 flex justify-center lg:justify-end">
-            <LoginCTAVisual />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
+            {TESTIMONIALS.map(({ name, role, rating, quote }) => (
+              <div key={name} className="bg-black p-8 flex flex-col gap-5">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
+                    <span className="text-white/50 text-xs font-bold">{name[0]}</span>
+                  </div>
+                  <div>
+                    <p className="text-white text-xs font-bold tracking-wide">{name.toUpperCase()}</p>
+                    <p className="text-white/40 text-[11px] font-mono mt-0.5">{role}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className={`text-[11px] ${i < rating ? 'text-white' : 'text-white/20'}`}>★</span>
+                  ))}
+                </div>
+
+                <p className="text-[13px] text-white/55 leading-relaxed italic flex-1">{quote}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ── Worker CTA ──────────────────────────────────────────────────── */}
-      <section className="py-20 bg-black">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1">
-            <p className="text-uber-gray-400 text-xs font-bold uppercase tracking-widest mb-4">For professionals</p>
-            <h2 className="text-4xl font-black text-white leading-tight mb-4">
-              Earn on your<br />own schedule
-            </h2>
-            <p className="text-uber-gray-400 text-lg mb-8">
-              Join our network of trusted home service professionals. Set your own hours and grow your client base.
-            </p>
+      <section className="py-24 bg-white border-t border-black/10">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p className="text-[10px] font-mono text-black/35 tracking-[0.25em] uppercase mb-4">For Students</p>
+          <h2 className="text-3xl font-black text-black tracking-tight uppercase mb-4">
+            Earn on Your Own Schedule
+          </h2>
+          <p className="text-sm text-black/45 max-w-lg mx-auto leading-relaxed mb-10">
+            Turn your free time into real income. Set your own hours, pick the jobs you want,
+            and build a reputation in your neighborhood. Top earners make over $800/week.
+          </p>
+          <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link
               to="/worker/register"
-              className="inline-flex items-center gap-2 px-6 h-12 bg-white text-black font-bold text-sm rounded-xl hover:bg-uber-gray-100 transition-colors"
+              className="px-7 h-11 bg-black text-white text-[11px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 hover:bg-black/80 transition-colors"
             >
-              Get started as a pro
-              <ArrowRight className="w-4 h-4" />
+              GET STARTED AS A PRO
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </div>
-          <div className="flex-1 flex justify-center lg:justify-end">
-            <WorkerVisual />
+            <a
+              href="#how-it-works"
+              className="px-7 h-11 border border-black/25 text-black text-[11px] font-bold tracking-[0.2em] uppercase flex items-center hover:border-black transition-colors"
+            >
+              HOW IT WORKS
+            </a>
           </div>
         </div>
       </section>
 
       {/* ── Footer ──────────────────────────────────────────────────────── */}
-      <footer className="bg-black border-t border-white/10 py-12">
+      <footer className="bg-black border-t border-white/10 py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-10">
-            <div>
+          <div className="flex flex-col md:flex-row gap-12 mb-14">
+            {/* Brand */}
+            <div className="md:w-56">
               <div className="flex items-center gap-2.5 mb-4">
-                <img src={logo} alt="lintel" className="h-8 w-8 rounded-full object-cover" />
-                <span className="text-white text-xl font-black">lintel</span>
+                <img src={logo} alt="lintel" className="h-7 w-7 rounded-full object-cover" />
+                <span className="text-white text-sm font-bold tracking-[0.15em] uppercase">LINTEL</span>
               </div>
-              <p className="text-uber-gray-500 text-sm max-w-xs">
-                Home services, on demand. Trusted professionals for every home need.
+              <p className="text-white/35 text-[12px] leading-relaxed">
+                Home services on demand. Vetted students, insured work, and satisfaction guaranteed — every time.
               </p>
             </div>
-            <div className="flex gap-16">
-              <div>
-                <p className="text-white text-sm font-bold mb-3">Company</p>
-                <div className="space-y-2">
-                  <Link to="/terms"   className="block text-uber-gray-500 text-sm hover:text-white transition-colors">Terms</Link>
-                  <Link to="/privacy" className="block text-uber-gray-500 text-sm hover:text-white transition-colors">Privacy</Link>
-                  <Link to="/blog"    className="block text-uber-gray-500 text-sm hover:text-white transition-colors">Blog</Link>
+
+            {/* Link columns */}
+            <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                { heading: 'SERVICES', links: [['Gutter Cleaning', '/login'], ['Window Cleaning', '/login'], ['Pressure Washing', '/login'], ['House Cleaning', '/login'], ['Lawn Mowing', '/login']] },
+                { heading: 'HOMEOWNERS', links: [['How It Works', '#trust'], ['Pricing', '/login'], ['Book a Service', '/login'], ['Track Your Job', '/login']] },
+                { heading: 'STUDENTS', links: [['Become a Pro', '/worker/register'], ['How Payouts Work', '/worker/register'], ['Requirements', '/worker/register']] },
+                { heading: 'COMPANY', links: [['Blog', '/blog'], ['Terms of Use', '/terms'], ['Privacy Policy', '/privacy'], ['Support', '/login']] },
+              ].map(({ heading, links }) => (
+                <div key={heading}>
+                  <p className="text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase mb-4 font-mono">{heading}</p>
+                  <div className="space-y-2.5">
+                    {links.map(([label, href]) => (
+                      href.startsWith('/') ? (
+                        <Link key={label} to={href} className="block text-white/35 text-[12px] hover:text-white/70 transition-colors">{label}</Link>
+                      ) : (
+                        <a key={label} href={href} className="block text-white/35 text-[12px] hover:text-white/70 transition-colors">{label}</a>
+                      )
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <p className="text-white text-sm font-bold mb-3">Services</p>
-                <div className="space-y-2">
-                  <Link to="/login"           className="block text-uber-gray-500 text-sm hover:text-white transition-colors">Book a service</Link>
-                  <Link to="/worker/register" className="block text-uber-gray-500 text-sm hover:text-white transition-colors">Become a pro</Link>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-          <div className="pt-6 border-t border-white/10">
-            <p className="text-uber-gray-600 text-sm">© 2026 lintel. All rights reserved.</p>
+
+          <div className="pt-6 border-t border-white/8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <p className="text-white/20 text-[11px] font-mono">© 2026 LINTEL · ALL RIGHTS RESERVED</p>
+            <p className="text-white/15 text-[11px] font-mono">INSURED · BACKGROUND CHECKED · 4.9★ NETWORK</p>
           </div>
         </div>
       </footer>
-
-      {/* ── Sticky bottom bar ───────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-sm py-3 px-6">
-        <div className="max-w-sm mx-auto">
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="w-full h-12 bg-white text-black font-bold text-sm rounded-xl hover:bg-uber-gray-100 transition-colors"
-          >
-            See prices
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
 
-/* ── Illustrations ─────────────────────────────────────────────────────── */
+/* ── Home Visual ──────────────────────────────────────────────────────────── */
 
-function HeroVisual() {
+function HomeVisual() {
   return (
-    <div className="relative w-full max-w-[540px] rounded-3xl overflow-hidden" style={{ aspectRatio: '4/3' }}>
-      <svg viewBox="0 0 540 405" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        {/* Sky */}
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FEF3C7" />
-            <stop offset="100%" stopColor="#FDE68A" />
-          </linearGradient>
-        </defs>
-        <rect width="540" height="405" fill="url(#sky)" />
-
-        {/* Sun */}
-        <circle cx="450" cy="72" r="50" fill="#FCD34D" opacity="0.55" />
-        <circle cx="450" cy="72" r="35" fill="#FCD34D" opacity="0.8" />
-
-        {/* Birds */}
-        <path d="M78 68 Q83 62 88 68 Q93 62 98 68"  stroke="#A8A29E" strokeWidth="2" fill="none" strokeLinecap="round" />
-        <path d="M110 88 Q115 82 120 88 Q125 82 130 88" stroke="#A8A29E" strokeWidth="2" fill="none" strokeLinecap="round" />
+    <div className="relative w-full max-w-[500px]">
+      <svg viewBox="0 0 500 370" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        {/* Dot grid */}
+        {Array.from({ length: 14 }).map((_, i) => (
+          <line key={`h${i}`} x1="0" y1={i * 28} x2="500" y2={i * 28} stroke="#000" strokeWidth="0.4" opacity="0.06" />
+        ))}
+        {Array.from({ length: 18 }).map((_, i) => (
+          <line key={`v${i}`} x1={i * 28} y1="0" x2={i * 28} y2="370" stroke="#000" strokeWidth="0.4" opacity="0.06" />
+        ))}
 
         {/* Ground */}
-        <rect x="0" y="308" width="540" height="97" fill="#86EFAC" />
-        <rect x="0" y="326" width="540" height="79" fill="#4ADE80" />
+        <line x1="30" y1="300" x2="470" y2="300" stroke="#000" strokeWidth="0.8" opacity="0.2" />
 
         {/* House body */}
-        <rect x="160" y="194" width="220" height="164" rx="6" fill="#FB923C" />
+        <rect x="120" y="170" width="260" height="130" fill="none" stroke="#000" strokeWidth="1.3" opacity="0.7" />
 
         {/* Roof */}
-        <polygon points="138,196 270,82 402,196" fill="#EA580C" />
-
-        {/* Roof shadow line */}
-        <line x1="138" y1="196" x2="402" y2="196" stroke="#C2410C" strokeWidth="3" />
+        <polyline points="100,172 250,70 400,172" fill="none" stroke="#000" strokeWidth="1.3" opacity="0.7" />
+        <line x1="100" y1="172" x2="400" y2="172" stroke="#000" strokeWidth="0.7" opacity="0.3" />
 
         {/* Chimney */}
-        <rect x="300" y="96" width="30" height="62" rx="3" fill="#C2410C" />
-        <rect x="295" y="92" width="40" height="12" rx="3" fill="#9A3412" />
+        <rect x="300" y="90" width="22" height="50" fill="none" stroke="#000" strokeWidth="1" opacity="0.45" />
 
-        {/* Door */}
-        <rect x="232" y="272" width="76" height="86" rx="5" fill="#7C3AED" />
-        <rect x="232" y="272" width="76" height="38" rx="5" fill="#6D28D9" />
-        <circle cx="298" cy="318" r="5" fill="#DDD6FE" />
+        {/* Front door */}
+        <rect x="218" y="232" width="64" height="68" fill="none" stroke="#000" strokeWidth="1" opacity="0.6" />
+        <line x1="250" y1="232" x2="250" y2="300" stroke="#000" strokeWidth="0.5" opacity="0.3" />
+        <circle cx="262" cy="268" r="2.5" fill="#000" opacity="0.4" />
 
         {/* Left window */}
-        <rect x="172" y="224" width="58" height="52" rx="5" fill="#BAE6FD" />
-        <line x1="201" y1="224" x2="201" y2="276" stroke="#7DD3FC" strokeWidth="2.5" />
-        <line x1="172" y1="250" x2="230" y2="250" stroke="#7DD3FC" strokeWidth="2.5" />
+        <rect x="138" y="192" width="52" height="44" fill="none" stroke="#000" strokeWidth="1" opacity="0.55" />
+        <line x1="164" y1="192" x2="164" y2="236" stroke="#000" strokeWidth="0.5" opacity="0.3" />
+        <line x1="138" y1="214" x2="190" y2="214" stroke="#000" strokeWidth="0.5" opacity="0.3" />
 
         {/* Right window */}
-        <rect x="310" y="224" width="58" height="52" rx="5" fill="#BAE6FD" />
-        <line x1="339" y1="224" x2="339" y2="276" stroke="#7DD3FC" strokeWidth="2.5" />
-        <line x1="310" y1="250" x2="368" y2="250" stroke="#7DD3FC" strokeWidth="2.5" />
+        <rect x="310" y="192" width="52" height="44" fill="none" stroke="#000" strokeWidth="1" opacity="0.55" />
+        <line x1="336" y1="192" x2="336" y2="236" stroke="#000" strokeWidth="0.5" opacity="0.3" />
+        <line x1="310" y1="214" x2="362" y2="214" stroke="#000" strokeWidth="0.5" opacity="0.3" />
 
-        {/* Path */}
-        <rect x="245" y="358" width="50" height="47" fill="#D1D5DB" opacity="0.9" />
-        <rect x="238" y="356" width="64" height="10" rx="2" fill="#E5E7EB" opacity="0.8" />
+        {/* Path to door */}
+        <rect x="232" y="300" width="36" height="40" fill="none" stroke="#000" strokeWidth="0.6" opacity="0.2" />
 
-        {/* Left tree trunk + foliage */}
-        <rect x="86" y="272" width="14" height="76" rx="3" fill="#92400E" />
-        <ellipse cx="93" cy="254" rx="36" ry="46" fill="#16A34A" />
-        <ellipse cx="93" cy="242" rx="24" ry="30" fill="#22C55E" />
+        {/* Left tree */}
+        <line x1="72" y1="300" x2="72" y2="214" stroke="#000" strokeWidth="1" opacity="0.3" />
+        <ellipse cx="72" cy="196" rx="28" ry="36" fill="none" stroke="#000" strokeWidth="1" opacity="0.3" />
+        <ellipse cx="72" cy="184" rx="18" ry="24" fill="none" stroke="#000" strokeWidth="0.6" opacity="0.2" />
 
         {/* Right tree */}
-        <rect x="422" y="264" width="14" height="84" rx="3" fill="#92400E" />
-        <ellipse cx="429" cy="244" rx="36" ry="48" fill="#15803D" />
-        <ellipse cx="429" cy="232" rx="24" ry="30" fill="#16A34A" />
+        <line x1="430" y1="300" x2="430" y2="206" stroke="#000" strokeWidth="1" opacity="0.3" />
+        <ellipse cx="430" cy="188" rx="28" ry="36" fill="none" stroke="#000" strokeWidth="1" opacity="0.3" />
+        <ellipse cx="430" cy="176" rx="18" ry="24" fill="none" stroke="#000" strokeWidth="0.6" opacity="0.2" />
 
-        {/* Bushes */}
-        <ellipse cx="166" cy="356" rx="22" ry="14" fill="#22C55E" />
-        <ellipse cx="374" cy="356" rx="22" ry="14" fill="#16A34A" />
+        {/* Lawn mowing lines */}
+        {[315, 330, 345, 360].map(y => (
+          <line key={y} x1="120" y1={y} x2="380" y2={y} stroke="#000" strokeWidth="0.5" strokeDasharray="4 6" opacity="0.1" />
+        ))}
+
+        {/* Dimension lines */}
+        <line x1="120" y1="322" x2="380" y2="322" stroke="#000" strokeWidth="0.5" opacity="0.15" />
+        <line x1="120" y1="318" x2="120" y2="326" stroke="#000" strokeWidth="0.5" opacity="0.15" />
+        <line x1="380" y1="318" x2="380" y2="326" stroke="#000" strokeWidth="0.5" opacity="0.15" />
+        <text x="226" y="338" fontFamily="monospace" fontSize="7.5" fill="#000" opacity="0.2" textAnchor="middle">SERVICE AREA</text>
+
+        {/* Status badge bottom-right */}
+        <rect x="295" y="240" width="158" height="50" fill="#000" opacity="0.88" />
+        <text x="306" y="258" fontFamily="monospace" fontSize="7.5" fill="white" opacity="0.7">LAST BOOKING: 2h AGO</text>
+        <text x="306" y="272" fontFamily="monospace" fontSize="7.5" fill="white" opacity="0.7">SERVICE: GUTTER CLEAN</text>
+        <text x="306" y="286" fontFamily="monospace" fontSize="7.5" fill="white" opacity="0.45">RATING: ★★★★★</text>
       </svg>
 
-      {/* Floating badge — top left */}
-      <div className="absolute top-5 left-5 bg-white rounded-2xl px-3.5 py-2.5 shadow-lg">
-        <p className="text-xs font-black text-black">Available now</p>
-        <div className="flex items-center gap-1.5 mt-0.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-uber-green animate-pulse" />
-          <p className="text-xs text-uber-green font-semibold">23 pros nearby</p>
+      {/* Floating badge */}
+      <div className="absolute top-4 left-4 bg-white border border-black/15 px-3.5 py-2.5 shadow-sm">
+        <p className="text-[10px] font-bold text-black tracking-[0.1em] uppercase">Available Now</p>
+        <div className="flex items-center gap-1.5 mt-1">
+          <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
+          <p className="text-[10px] font-mono text-black/55">23 PROS NEARBY</p>
         </div>
       </div>
-
-      {/* Floating badge — bottom right */}
-      <div className="absolute bottom-8 right-5 bg-black rounded-2xl px-3.5 py-2.5 shadow-lg">
-        <p className="text-xs font-bold text-white">Last booked nearby</p>
-        <p className="text-xs text-uber-gray-400 mt-0.5">Gutter cleaning · 2h ago</p>
-      </div>
     </div>
   );
 }
 
-function LoginCTAVisual() {
+/* ── Service Icons ───────────────────────────────────────────────────────── */
+
+function GutterIcon() {
   return (
-    <div className="w-full max-w-md rounded-3xl overflow-hidden bg-uber-gray-50" style={{ height: 300 }}>
-      <svg viewBox="0 0 400 300" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="300" fill="#F6F6F6" />
-
-        {/* Ground shadow */}
-        <ellipse cx="130" cy="256" rx="45" ry="12" fill="#E2E2E2" />
-        <ellipse cx="290" cy="256" rx="45" ry="12" fill="#E2E2E2" />
-
-        {/* Person 1 — homeowner */}
-        <rect x="100" y="152" width="60" height="104" rx="8" fill="#3B82F6" />
-        <circle cx="130" cy="130" r="30" fill="#FDE68A" />
-        <ellipse cx="130" cy="106" rx="30" ry="14" fill="#1C1917" />
-        <circle cx="122" cy="128" r="3.5" fill="#1C1917" />
-        <circle cx="138" cy="128" r="3.5" fill="#1C1917" />
-        <path d="M123 141 Q130 147 137 141" stroke="#1C1917" strokeWidth="2" fill="none" strokeLinecap="round" />
-        {/* Arm reaching out */}
-        <rect x="160" y="162" width="18" height="12" rx="5" fill="#FDE68A" />
-
-        {/* Person 2 — worker */}
-        <rect x="250" y="146" width="64" height="110" rx="8" fill="#1C1917" />
-        {/* Hi-vis vest */}
-        <polygon points="260,146 276,146 276,220 260,220" fill="#D97706" opacity="0.6" />
-        <polygon points="298,146 314,146 314,220 298,220" fill="#D97706" opacity="0.6" />
-        <circle cx="282" cy="122" r="30" fill="#FBBF24" />
-        <rect x="256" y="98" width="52" height="10" rx="3" fill="#374151" />
-        <ellipse cx="282" cy="96" rx="32" ry="12" fill="#1F2937" />
-        <circle cx="274" cy="120" r="3.5" fill="#1C1917" />
-        <circle cx="290" cy="120" r="3.5" fill="#1C1917" />
-        <path d="M275 133 Q282 139 289 133" stroke="#1C1917" strokeWidth="2" fill="none" strokeLinecap="round" />
-        {/* Broom handle */}
-        <rect x="316" y="116" width="8" height="130" rx="4" fill="#92400E" />
-        <ellipse cx="320" cy="122" rx="16" ry="9" fill="#D97706" />
-
-        {/* Stars between them */}
-        <polygon points="200,135 203,126 206,135 215,135 208,141 211,150 200,144 189,150 192,141 185,135" fill="#FCD34D" />
-      </svg>
-    </div>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+      <path d="M2 4h12M2 4v8M14 4v8M2 12h12M6 4v3M10 4v3" opacity="0.7" />
+    </svg>
   );
 }
 
-function WorkerVisual() {
+function WindowIcon() {
   return (
-    <div className="w-full max-w-sm rounded-3xl overflow-hidden" style={{ height: 280 }}>
-      <svg viewBox="0 0 360 280" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <rect width="360" height="280" fill="#111111" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+      <rect x="2" y="2" width="12" height="12" />
+      <line x1="8" y1="2" x2="8" y2="14" />
+      <line x1="2" y1="8" x2="14" y2="8" />
+    </svg>
+  );
+}
 
-        {/* Subtle grid */}
-        {[50,100,150,200,250].map(y => (
-          <line key={y} x1="0" y1={y} x2="360" y2={y} stroke="#ffffff" strokeWidth="0.5" opacity="0.04" />
-        ))}
-        {[60,120,180,240,300].map(x => (
-          <line key={x} x1={x} y1="0" x2={x} y2="280" stroke="#ffffff" strokeWidth="0.5" opacity="0.04" />
-        ))}
+function PressureIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+      <path d="M3 13l4-4M11 2l-2 2M7 5l2 1 1 2M4 10l1 2M8 4l-1 3 3 1" opacity="0.7" />
+      <circle cx="11" cy="3" r="1.5" />
+    </svg>
+  );
+}
 
-        {/* Worker figure */}
-        <rect x="140" y="150" width="80" height="100" rx="8" fill="#374151" />
-        {/* Hi-vis */}
-        <polygon points="150,150 164,150 164,250 150,250" fill="#D97706" opacity="0.7" />
-        <polygon points="196,150 210,150 210,250 196,250" fill="#D97706" opacity="0.7" />
-        <circle cx="180" cy="126" r="32" fill="#FBBF24" />
-        <rect x="154" y="100" width="52" height="11" rx="3" fill="#374151" />
-        <ellipse cx="180" cy="98" rx="32" ry="13" fill="#1F2937" />
-        <circle cx="172" cy="124" r="3.5" fill="#1C1917" />
-        <circle cx="188" cy="124" r="3.5" fill="#1C1917" />
-        <path d="M173 137 Q180 143 187 137" stroke="#1C1917" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        {/* Arms */}
-        <rect x="108" y="158" width="34" height="14" rx="6" fill="#FBBF24" />
-        <rect x="218" y="158" width="34" height="14" rx="6" fill="#FBBF24" />
+function HouseIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 7l6-5 6 5v7H2V7z" />
+      <path d="M6 14v-5h4v5" />
+    </svg>
+  );
+}
 
-        {/* Rating card */}
-        <rect x="16" y="18" width="118" height="54" rx="10" fill="white" opacity="0.96" />
-        <text x="27" y="40" fontFamily="system-ui,sans-serif" fontSize="11" fontWeight="700" fill="#111">Top Rated</text>
-        <text x="27" y="57" fontFamily="system-ui,sans-serif" fontSize="10" fill="#6B7280">4.9 ★  ·  247 jobs</text>
+function DeepIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+      <circle cx="8" cy="8" r="5.5" />
+      <circle cx="8" cy="8" r="2.5" />
+      <line x1="8" y1="1" x2="8" y2="4" />
+      <line x1="8" y1="12" x2="8" y2="15" />
+      <line x1="1" y1="8" x2="4" y2="8" />
+      <line x1="12" y1="8" x2="15" y2="8" />
+    </svg>
+  );
+}
 
-        {/* Earnings card */}
-        <rect x="226" y="18" width="118" height="54" rx="10" fill="#D97706" />
-        <text x="237" y="40" fontFamily="system-ui,sans-serif" fontSize="11" fontWeight="700" fill="white">This week</text>
-        <text x="237" y="57" fontFamily="system-ui,sans-serif" fontSize="10" fill="white" opacity="0.85">+$847 earned</text>
-      </svg>
-    </div>
+function LawnIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+      <line x1="2" y1="11" x2="14" y2="11" />
+      <path d="M4 11V7M6 11V5M8 11V7M10 11V5M12 11V7" />
+      <path d="M2 14h12" />
+    </svg>
   );
 }
