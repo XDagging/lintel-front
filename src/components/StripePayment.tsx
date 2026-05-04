@@ -47,17 +47,6 @@ export function StripePayment({ amount, onSuccess, onError, submitLabel }: Strip
         <PaymentElement
           options={{
             layout: 'tabs',
-            appearance: {
-              theme: 'stripe',
-              variables: {
-                colorPrimary: '#000000',
-                colorBackground: '#F6F6F6',
-                colorText: '#000000',
-                colorDanger: '#C01A1A',
-                borderRadius: '8px',
-                fontFamily: 'Inter, system-ui, sans-serif',
-              },
-            },
           }}
         />
       </div>

@@ -10,6 +10,8 @@ interface BookingStore {
   notes: string;
   promoCode: string;
   currentJobId: string | null;
+  quotes: Partial<Record<ServiceType, number>>;
+  quotesReady: boolean;
   toggleService: (service: ServiceType) => void;
   setAddress: (address: string, confirmed?: boolean) => void;
   setCoordinates: (coords: { lat: number; lng: number }) => void;
@@ -17,6 +19,8 @@ interface BookingStore {
   setNotes: (notes: string) => void;
   setPromoCode: (code: string) => void;
   setCurrentJobId: (id: string) => void;
+  setQuotes: (quotes: Partial<Record<ServiceType, number>>) => void;
+  setQuotesReady: (ready: boolean) => void;
   reset: () => void;
 }
 
@@ -29,6 +33,8 @@ export const useBookingStore = create<BookingStore>((set) => ({
   notes: '',
   promoCode: '',
   currentJobId: null,
+  quotes: {},
+  quotesReady: false,
   toggleService: (service) =>
     set((state) => ({
       selectedServices: state.selectedServices.includes(service)
@@ -42,6 +48,8 @@ export const useBookingStore = create<BookingStore>((set) => ({
   setNotes: (notes) => set({ notes }),
   setPromoCode: (code) => set({ promoCode: code }),
   setCurrentJobId: (id) => set({ currentJobId: id }),
+  setQuotes: (quotes) => set({ quotes, quotesReady: true }),
+  setQuotesReady: (ready) => set({ quotesReady: ready }),
   reset: () =>
     set({
       selectedServices: [],
@@ -52,5 +60,7 @@ export const useBookingStore = create<BookingStore>((set) => ({
       notes: '',
       promoCode: '',
       currentJobId: null,
+      quotes: {},
+      quotesReady: false,
     }),
 }));

@@ -10,6 +10,7 @@ interface AuthUser {
   name?: string;
   img?: string;
   promoCode?: string;
+  isApproved?: boolean;
 }
 
 interface AuthStore {

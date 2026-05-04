@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const isLocalhost = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: isLocalhost ? 'http://localhost:3001/api' : 'https://api.uselintel.pro/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -86,6 +89,8 @@ export interface SavedCard {
 }
 
 export const jobs = {
+  getQuote: (address: string, serviceTypes: ServiceType[]) =>
+    api.post<{ quotes: Record<ServiceType, number> }>('/jobs/quote', { address, serviceTypes }),
   create: (data: {
     serviceType: ServiceType;
     address: string;

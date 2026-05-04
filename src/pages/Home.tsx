@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Loader2, ChevronRight, Sparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../store/authStore';
 import { useBookingStore } from '../store/bookingStore';
-import { services, users } from '../lib/api';
+import { services, users, jobs } from '../lib/api';
 import type { ServiceType } from '../lib/api';
 import { ServiceCard } from '../components/ServiceCard';
 import { UpsellModal } from '../components/UpsellModal';
@@ -43,10 +43,13 @@ export default function Home() {
   const {
     selectedServices, address, confirmedAddress,
     coordinates, toggleService, setAddress, setCoordinates,
+    setQuotes, setQuotesReady, quotes,
   } = useBookingStore();
 
   const [savingAddress, setSavingAddress] = useState(false);
   const [showUpsell, setShowUpsell] = useState(false);
+  const [quotesLoading, setQuotesLoading] = useState(false);
+  const addressInitializedRef = useRef(false);
 
   const { data: serviceList, isLoading } = useQuery({
     queryKey: ['services'],
@@ -54,14 +57,41 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (user?.address && !address) {
+    if (user?.address && !addressInitializedRef.current) {
+      addressInitializedRef.current = true;
       setAddress(user.address, true);
       geocodeAddress(user.address).then((coords) => {
         if (coords) setCoordinates(coords);
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.address, address]);
+  }, [user?.address]);
+
+  useEffect(() => {
+    if (confirmedAddress && serviceList) {
+      fetchQuotes(confirmedAddress, serviceList);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmedAddress, serviceList]);
+
+  const fetchQuotes = useCallback(async (addr: string, svcList: typeof serviceList) => {
+    if (!addr || !svcList) return;
+    const quotableTypes = svcList
+      .filter((s) => !COMING_SOON.includes(s.id))
+      .map((s) => s.id);
+    if (quotableTypes.length === 0) return;
+    setQuotesLoading(true);
+    setQuotesReady(false);
+    try {
+      const res = await jobs.getQuote(addr, quotableTypes);
+      setQuotes(res.data.quotes);
+      setQuotesLoading(false);
+    } catch {
+      // silently fall back to static prices
+      setQuotesReady(true);
+      setQuotesLoading(false);
+    }
+  }, [setQuotes, setQuotesReady]);
 
   const handleAddressConfirm = async (addr: string) => {
     setAddress(addr, true);
@@ -75,6 +105,7 @@ export default function Home() {
       updateUser({ address: addr });
     } catch { /* non-critical */ }
     finally { setSavingAddress(false); }
+    fetchQuotes(addr, serviceList);
   };
 
   const handleContinue = () => {
@@ -99,8 +130,9 @@ export default function Home() {
   };
 
   const selectedObjects = (serviceList ?? []).filter((s) => selectedServices.includes(s.id));
-  const subtotal = selectedObjects.reduce((sum, s) => sum + s.price, 0);
   const hasBundle = selectedServices.length > 1;
+  const priceFor = (id: ServiceType, base: number) => quotes[id] ?? base;
+  const subtotal = selectedObjects.reduce((sum, s) => sum + priceFor(s.id, s.price), 0);
   const savings = hasBundle ? subtotal * BUNDLE_DISCOUNT : 0;
 
   return (
@@ -162,6 +194,19 @@ export default function Home() {
             )}
           </div>
 
+          {/* Quote loading banner */}
+          {quotesLoading && (
+            <div className="mb-6 rounded-xl border border-uber-gray-100 bg-uber-gray-50 overflow-hidden">
+              <div className="flex items-center gap-2.5 px-4 pt-3 pb-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-black flex-shrink-0" />
+                <p className="text-sm font-semibold text-black">Finding your quote…</p>
+              </div>
+              <div className="mx-4 mb-3 h-1 bg-uber-gray-200 rounded-full overflow-hidden">
+                <div className="h-full w-1/3 bg-black rounded-full animate-progress-slide" />
+              </div>
+            </div>
+          )}
+
           {/* Services */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-3">
@@ -180,14 +225,16 @@ export default function Home() {
                 {serviceList?.map((service) => {
                   const comingSoon = COMING_SOON.includes(service.id);
                   const isSelected = selectedServices.includes(service.id);
-                  const discountedPrice = hasBundle && isSelected ? service.price * (1 - BUNDLE_DISCOUNT) : undefined;
+                  const effectivePrice = priceFor(service.id, service.price);
+                  const discountedPrice = hasBundle && isSelected ? effectivePrice * (1 - BUNDLE_DISCOUNT) : undefined;
                   return (
                     <ServiceCard
                       key={service.id}
-                      service={service}
+                      service={{ ...service, price: effectivePrice }}
                       selected={isSelected}
                       comingSoon={comingSoon}
                       discountedPrice={discountedPrice}
+                      priceLoading={quotesLoading && !comingSoon}
                       onClick={() => { if (!comingSoon) toggleService(service.id); }}
                     />
                   );
@@ -213,7 +260,7 @@ export default function Home() {
           {/* CTA */}
           <button
             onClick={handleContinue}
-            disabled={selectedServices.length === 0 || !confirmedAddress}
+            disabled={selectedServices.length === 0 || !confirmedAddress || quotesLoading}
             className="w-full h-14 bg-black text-white font-bold text-base rounded-xl flex items-center justify-center gap-2 hover:bg-uber-gray-800 transition-colors disabled:bg-uber-gray-200 disabled:text-uber-gray-400 disabled:cursor-not-allowed"
           >
             Continue

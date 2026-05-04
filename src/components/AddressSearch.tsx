@@ -18,7 +18,6 @@ interface AddressSearchProps {
 
 export function AddressSearch({ value, onChange, onConfirm, placeholder, className }: AddressSearchProps) {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [loading, setLoading] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -34,7 +33,6 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
 
   const fetchPredictions = async (input: string) => {
     if (!input.trim() || input.length < 3) { setPredictions([]); return; }
-    setLoading(true);
     try {
       const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
       const res = await fetch(
@@ -44,7 +42,6 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
       setPredictions(data.predictions ?? []);
       setOpen(true);
     } catch { setPredictions([]); }
-    finally { setLoading(false); }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -156,16 +156,29 @@ export default function BlogPost() {
           </div>
 
           {/* CTA */}
-          <div className="mt-14 bg-black rounded-3xl p-8">
-            <p className="text-white text-2xl font-black mb-2">Ready to book?</p>
-            <p className="text-uber-gray-400 text-sm mb-6">Enter your address and get started in under 2 minutes.</p>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 px-6 h-11 bg-white text-black text-sm font-bold rounded-xl hover:bg-uber-gray-100 transition-colors"
-            >
-              See prices in my area
-            </Link>
-          </div>
+          {post.category === 'For Professionals' ? (
+            <div className="mt-14 bg-black rounded-3xl p-8">
+              <p className="text-white text-2xl font-black mb-2">Ready to earn?</p>
+              <p className="text-uber-gray-400 text-sm mb-6">Sign up in 5 minutes. No fees, no commitments — just real work for real pay.</p>
+              <Link
+                to="/worker/register"
+                className="inline-flex items-center gap-2 px-6 h-11 bg-white text-black text-sm font-bold rounded-xl hover:bg-uber-gray-100 transition-colors"
+              >
+                Sign up as a pro
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-14 bg-black rounded-3xl p-8">
+              <p className="text-white text-2xl font-black mb-2">Ready to book?</p>
+              <p className="text-uber-gray-400 text-sm mb-6">Enter your address and get started in under 2 minutes.</p>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 px-6 h-11 bg-white text-black text-sm font-bold rounded-xl hover:bg-uber-gray-100 transition-colors"
+              >
+                See prices in my area
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 

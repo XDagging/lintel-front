@@ -1,4 +1,4 @@
-import { Wind, Droplets, Sparkles, Home, Scissors, Check } from 'lucide-react';
+import { Wind, Droplets, Sparkles, Home, Scissors, Check, Loader2 } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import type { Service, ServiceType } from '../lib/api';
 
@@ -16,10 +16,11 @@ interface ServiceCardProps {
   selected?: boolean;
   comingSoon?: boolean;
   discountedPrice?: number;
+  priceLoading?: boolean;
   onClick: () => void;
 }
 
-export function ServiceCard({ service, selected, comingSoon, discountedPrice, onClick }: ServiceCardProps) {
+export function ServiceCard({ service, selected, comingSoon, discountedPrice, priceLoading, onClick }: ServiceCardProps) {
   const Icon = SERVICE_ICONS[service.id] ?? Home;
   const showDiscount = discountedPrice !== undefined && discountedPrice !== service.price;
 
@@ -28,15 +29,22 @@ export function ServiceCard({ service, selected, comingSoon, discountedPrice, on
       onClick={onClick}
       disabled={comingSoon}
       className={cn(
-        'w-full flex items-center gap-4 px-4 py-4 rounded-xl border-2 text-left transition-all duration-150',
+        'w-full flex items-center gap-4 px-4 py-4 rounded-xl border-2 text-left transition-all duration-150 relative overflow-hidden',
         comingSoon
           ? 'border-uber-gray-100 bg-uber-gray-50 cursor-not-allowed opacity-60'
           : cn(
-              'hover:bg-uber-gray-50 active:scale-[0.99]',
-              selected ? 'border-black bg-white' : 'border-uber-gray-200 bg-white'
-            )
+            'hover:bg-uber-gray-50 active:scale-[0.99]',
+            selected ? 'border-black bg-white' : 'border-uber-gray-200 bg-white'
+          )
       )}
     >
+      {comingSoon && (
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <span className="bg-black text-white text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1.5 rounded-full shadow-lg">
+            Coming soon
+          </span>
+        </div>
+      )}
       <div className={cn(
         'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors relative',
         comingSoon ? 'bg-uber-gray-100' : selected ? 'bg-black' : 'bg-uber-gray-100'
@@ -52,18 +60,15 @@ export function ServiceCard({ service, selected, comingSoon, discountedPrice, on
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="font-bold text-black text-base leading-tight">{service.name}</p>
-          {comingSoon && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-uber-gray-200 text-uber-gray-500">
-              Coming soon
-            </span>
-          )}
         </div>
         <p className="text-uber-gray-500 text-sm mt-0.5 truncate">{service.description}</p>
         <p className="text-uber-gray-400 text-xs mt-1">{service.duration}</p>
       </div>
 
-      <div className="text-right flex-shrink-0">
-        {showDiscount ? (
+      <div className="text-right flex-shrink-0 min-w-[64px]">
+        {priceLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin text-uber-gray-400 ml-auto" />
+        ) : showDiscount ? (
           <>
             <p className="text-uber-gray-400 text-sm line-through leading-tight">{formatCurrency(service.price)}</p>
             <p className="font-bold text-uber-green text-lg leading-tight">{formatCurrency(discountedPrice!)}</p>

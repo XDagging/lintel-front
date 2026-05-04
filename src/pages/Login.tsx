@@ -19,7 +19,7 @@ export default function Login() {
     try {
       const res = await auth.google(credentialResponse.credential);
       const { token, user: u } = res.data;
-      setAuth(token, u as Parameters<typeof setAuth>[1]);
+      setAuth(token, u as unknown as Parameters<typeof setAuth>[1]);
       navigate(u.role === 'worker' ? '/worker/dashboard' : '/book');
     } catch {
       toast({ title: 'Sign-in failed', description: 'Please try again.', variant: 'destructive' });

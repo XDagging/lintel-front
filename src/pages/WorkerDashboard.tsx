@@ -3,10 +3,22 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MapPin, CheckCircle, Loader2, Tag, KeyRound, AlertTriangle, X, Calendar, FileText, Clock } from 'lucide-react';
 import { jobs, workers } from '../lib/api';
 import type { Job, ServiceType } from '../lib/api';
-import { formatCurrency, cn } from '../lib/utils';
+import { formatCurrency } from '../lib/utils';
 import { DisputeModal } from '../components/DisputeModal';
+import { WorkerLayout } from '../components/WorkerLayout';
 import { useAuthStore } from '../store/authStore';
 import { toast } from '../hooks/useToast';
+
+function fmtServiceType(s: string) {
+  return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function getBundleLabel(job: Job) {
+  if (job.serviceType === 'bundle' && job.serviceTypes?.length) {
+    return job.serviceTypes.map(fmtServiceType).join(' + ');
+  }
+  return fmtServiceType(job.serviceType);
+}
 
 function fmt(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
@@ -21,7 +33,7 @@ function JobDetailModal({ job, onAccept, accepting, onClose }: {
   accepting?: boolean;
   onClose: () => void;
 }) {
-  const serviceLabel = job.serviceType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const serviceLabel = getBundleLabel(job);
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
@@ -108,7 +120,6 @@ export default function WorkerDashboard() {
   const [showComplete, setShowComplete] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState('');
   const [showDispute, setShowDispute] = useState(false);
-  const [available, setAvailable] = useState(true);
 
   const { data: openJobs, isLoading: openLoading } = useQuery({
     queryKey: ['jobs', 'open'],
@@ -157,38 +168,18 @@ export default function WorkerDashboard() {
     onError: () => toast({ title: 'Error retrieving code', variant: 'destructive' }),
   });
 
-  const toggleAvailability = async () => {
-    const next = !available;
-    setAvailable(next);
-    const fd = new FormData();
-    fd.append('isAvailable', String(next));
-    await workers.updateProfile(fd);
-  };
-
   const activeJobs = myJobs?.filter((j) => ['accepted', 'in-progress'].includes(j.status)) ?? [];
   const awaitingConfirmation = myJobs?.filter((j) => j.status === 'completed') ?? [];
   const completedJobs = myJobs?.filter((j) => j.status === 'confirmed') ?? [];
   const totalEarnings = completedJobs.reduce((s, j) => s + j.price * 0.4 + (j.tipAmount ?? 0), 0);
 
   return (
-    <div className="min-h-screen bg-white pt-16">
-      <div className="max-w-2xl mx-auto px-6 py-10">
+    <WorkerLayout>
+    <div className="max-w-2xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-black text-black">Hey, {user?.name?.split(' ')[0] ?? 'Pro'}</h1>
-            <p className="text-uber-gray-500 mt-1">Worker dashboard</p>
-          </div>
-          <button
-            onClick={toggleAvailability}
-            className={cn(
-              'flex items-center gap-2 px-4 h-9 text-sm font-bold rounded-full border-2 transition-all',
-              available ? 'border-black text-black' : 'border-uber-gray-200 text-uber-gray-400'
-            )}
-          >
-            <div className={cn('w-2 h-2 rounded-full', available ? 'bg-uber-green' : 'bg-uber-gray-300')} />
-            {available ? 'Available' : 'Offline'}
-          </button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-black">Hey, {user?.name?.split(' ')[0] ?? 'Pro'}</h1>
+          <p className="text-uber-gray-500 mt-1">Here's what's happening today</p>
         </div>
 
         {/* Stats */}
@@ -223,7 +214,7 @@ export default function WorkerDashboard() {
         {activeJobs.map((job) => (
           <div key={job.uuid} className="border-2 border-black rounded-xl p-5 mb-6">
             <p className="text-xs font-bold text-uber-gray-400 uppercase tracking-widest mb-3">Active job</p>
-            <p className="font-black text-black text-xl capitalize mb-1">{job.serviceType.replace(/-/g, ' ')}</p>
+            <p className="font-black text-black text-xl capitalize mb-1">{getBundleLabel(job)}</p>
             <p className="text-sm text-uber-gray-500 flex items-center gap-1 mb-1">
               <MapPin className="w-3.5 h-3.5" />{job.address}
             </p>
@@ -256,7 +247,7 @@ export default function WorkerDashboard() {
         {awaitingConfirmation.map((job) => (
           <div key={job.uuid} className="border-2 border-orange-400 rounded-xl p-5 mb-6">
             <p className="text-xs font-bold text-orange-500 uppercase tracking-widest mb-3">Awaiting confirmation</p>
-            <p className="font-black text-black text-xl capitalize mb-1">{job.serviceType.replace(/-/g, ' ')}</p>
+            <p className="font-black text-black text-xl capitalize mb-1">{getBundleLabel(job)}</p>
             <p className="text-sm text-uber-gray-500 flex items-center gap-1 mb-1">
               <MapPin className="w-3.5 h-3.5" />{job.address}
             </p>
@@ -293,7 +284,7 @@ export default function WorkerDashboard() {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0">
-                      <p className="font-black text-black capitalize">{job.serviceType.replace(/-/g, ' ')}</p>
+                      <p className="font-black text-black capitalize">{getBundleLabel(job)}</p>
                       <p className="text-sm text-uber-gray-500 mt-0.5 flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 flex-shrink-0" />{job.address}
                       </p>
@@ -351,6 +342,6 @@ export default function WorkerDashboard() {
       {showDispute && selectedJob && (
         <DisputeModal jobId={selectedJob.uuid} serviceType={selectedJob.serviceType} onClose={() => { setShowDispute(false); setSelectedJob(null); }} />
       )}
-    </div>
+    </WorkerLayout>
   );
 }

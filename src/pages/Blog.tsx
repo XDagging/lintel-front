@@ -4,6 +4,115 @@ import logo from '../assets/logo.jpeg';
 
 export const BLOG_POSTS = [
   {
+    slug: 'what-a-pro-does',
+    title: 'What a Lintel Pro Actually Does — A Full Breakdown',
+    excerpt: 'Thinking about signing up as a Lintel pro? Here\'s exactly what a typical job looks like, how you get paid, and what Lintel handles for you — including all the equipment.',
+    readTime: '5 min read',
+    date: 'May 1, 2026',
+    category: 'For Professionals',
+    content: `
+## What it means to be a Lintel pro
+
+A Lintel pro is a vetted, independent service worker who picks up on-demand home service jobs — gutter cleaning, pressure washing, window cleaning, and more. You set your own schedule, choose which jobs to accept, and get paid directly after each one.
+
+Think of it like being a rideshare driver, but for home services. You don't need a car full of passengers — just a willingness to work, a driver's license, and a clean background check. Lintel provides all the equipment.
+
+## Your typical job, step by step
+
+### Step 1 — A job appears on your dashboard
+
+When a homeowner books a service in your area, the job shows up in your worker dashboard. You'll see the service type, address, date, and the payout amount — before you accept it.
+
+### Step 2 — You accept the job
+
+Tap "Accept" and the job is yours. The homeowner gets notified that a pro has been assigned. You'll see the full address and any notes from the customer.
+
+### Step 3 — Show up and do the work
+
+Arrive at the scheduled time, introduce yourself, and get to work. Each service type has a clear scope — Lintel defines what's included so there are no awkward conversations about what's "extra."
+
+- **Gutter cleaning**: Remove debris from all accessible gutters using the provided vacuum and blower equipment, flush downspouts, bag and remove waste. All work is ground-level — no ladders.
+- **Pressure washing**: Clean the specified surface (driveway, patio, deck, or siding) using Lintel's commercial-grade pressure washer. We provide the machine, detergents, and nozzles — you just operate it.
+- **Window cleaning**: Clean all exterior-facing windows (and interior if booked) using the provided water-fed pole system and supplies. Streak-free finish expected.
+
+### Step 4 — Mark the job complete
+
+When you're done, mark the job as complete in the app. This generates a **confirmation code** — a unique code you give to the homeowner.
+
+### Step 5 — Get paid
+
+The homeowner enters your confirmation code in their app to confirm they're satisfied. Once confirmed, your payout is released — typically within 1–2 business days via Stripe. If the homeowner doesn't confirm within 48 hours, the system auto-confirms and pays you.
+
+## How much do you earn?
+
+On every completed job, you keep **40% of the job fee**. Here's what that looks like in practice:
+
+| Service | Job Price | Your Payout |
+|---------|-----------|-------------|
+| Gutter Cleaning | $89 | $35.60 |
+| Window Cleaning | $119 | $47.60 |
+| Pressure Washing | $149 | $59.60 |
+
+Tips are added on top — and **100% of every tip goes directly to you**. Lintel takes nothing from tips, ever.
+
+### Our $40/hr minimum commitment
+
+We believe pros should be paid fairly for their time. If your commission on a job works out to less than **$40/hour** based on the expected job duration, we'll increase your split until it does. This isn't a bonus or a promo — it's a standing policy. We'd rather take a smaller cut than have our pros earning less than they deserve.
+
+Top-performing pros who take multiple jobs per day regularly earn **$400–$800/week** working part-time hours.
+
+## What Lintel handles for you
+
+This is the part most people underestimate. Running a home service business on your own means buying equipment, marketing, scheduling, invoicing, handling disputes, and buying insurance. Lintel handles all of that:
+
+- **All equipment and supplies**: We provide everything you need for every job — pressure washers, vacuums, cleaning solutions, water-fed poles, the works. You just show up and do the work.
+- **Customer acquisition**: We run ads, SEO, and referral programs. You never have to find your own clients.
+- **Scheduling**: The booking system handles availability, time slots, and reminders.
+- **Payment processing**: Stripe handles all money movement. You don't send invoices or chase payments.
+- **Insurance**: Every job is covered under Lintel's $1M general liability policy. If you accidentally damage something, we handle the claim.
+- **Dispute resolution**: If a customer isn't happy, our support team mediates. You don't have to negotiate with angry homeowners.
+
+## What you need to get started
+
+### Requirements
+- Must be a current high school student
+- Valid driver's license and reliable transportation to get to job sites
+- Pass a background check (Lintel runs this — it takes 1–3 business days)
+
+That's it. **Lintel provides all equipment and supplies** for every service type — pressure washers, gutter vacuums, window cleaning systems, detergents, trash bags, everything. You just need to show up ready to work.
+
+## A day in the life
+
+Here's what a realistic Tuesday might look like for an active Lintel pro:
+
+- **8:30 AM** — Check the dashboard over coffee. See two gutter cleaning jobs and a pressure wash available nearby.
+- **9:00 AM** — Accept all three. Grab your keys and head out.
+- **9:30 AM** — Arrive at first gutter job. 45 minutes of work. Mark complete, hand over the code.
+- **10:30 AM** — Drive to second gutter job (12 minutes away). Same process.
+- **12:00 PM** — Lunch break.
+- **1:00 PM** — Pressure washing job. Takes about 90 minutes for a driveway.
+- **3:00 PM** — Done for the day. Three jobs completed, ~$143 earned before tips.
+
+That's a 6-hour workday, on your own terms. No boss. No set hours. No uniform (though a clean, professional appearance is expected).
+
+## How ratings work
+
+After each job, the homeowner rates you on a 5-star scale. Your rating is visible to future customers and affects which jobs you're offered. Here's the system:
+
+- **4.5★ and above**: You're in great standing. You get first access to new jobs in your area.
+- **4.0–4.4★**: You're on watch. Maintain quality or risk reduced job access.
+- **Below 4.0★**: Your account is paused for review. You may need to complete a quality refresher before reactivating.
+
+The network average is **4.9★** — most pros take pride in their work and ratings reflect that.
+
+## Ready to start?
+
+Signing up takes about 5 minutes. You'll fill out a short application, consent to a background check, and connect your bank account through Stripe. Once approved (usually 1–3 business days), jobs start appearing on your dashboard.
+
+No franchise fees. No startup costs. No equipment to buy. No minimum hours. Just real work for real pay.
+    `,
+  },
+  {
     slug: 'how-it-works',
     title: 'How Lintel Works: Book a Pro in Under 2 Minutes',
     excerpt: 'Enter your address, pick a service, and a vetted professional shows up. No phone calls, no haggling, no surprises — here\'s the full picture.',

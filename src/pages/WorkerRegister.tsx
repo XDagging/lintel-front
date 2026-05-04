@@ -29,7 +29,7 @@ export default function WorkerRegister() {
       const res = await api.post<{ token: string; worker: Record<string, unknown>; stripeOnboardingUrl: string }>(
         '/workers/register', { idToken, name, bio }
       );
-      setAuth(res.data.token, res.data.worker as Parameters<typeof setAuth>[1]);
+      setAuth(res.data.token, res.data.worker as unknown as Parameters<typeof setAuth>[1]);
       setStripeUrl(res.data.stripeOnboardingUrl);
       setStep('stripe');
     } catch (err: unknown) {

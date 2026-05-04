@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { jobs } from '../lib/api';
 import type { Job } from '../lib/api';
 import { formatCurrency, cn } from '../lib/utils';
-import { ChevronRight, Loader2, Layers, KeyRound } from 'lucide-react';
+import { ChevronRight, Loader2, Layers, KeyRound, ArrowLeft } from 'lucide-react';
 
 function fmtServiceType(s: string) {
   return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -73,6 +73,10 @@ export default function JobsList() {
   return (
     <div className="min-h-screen bg-white pt-16">
       <div className="max-w-2xl mx-auto px-6 py-10">
+        <Link to="/book" className="inline-flex items-center gap-1.5 text-sm font-semibold text-uber-gray-500 hover:text-black transition-colors mb-6">
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Link>
         <h1 className="text-3xl font-black text-black mb-1">My Jobs</h1>
         <p className="text-uber-gray-500 mb-8">Your service history</p>
 

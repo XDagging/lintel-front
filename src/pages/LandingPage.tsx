@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { MapPin, Shield, Clock, CheckCircle, ChevronRight, ArrowRight, Star } from 'lucide-react';
+import { Shield, Clock, CheckCircle, ChevronRight, ArrowRight, Star } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useBookingStore } from '../store/bookingStore';
 import { AddressSearch } from '../components/AddressSearch';
@@ -10,9 +10,9 @@ const SERVICES = [
   { id: 'gutter-cleaning',         code: 'LNT-001', name: 'Gutter Cleaning',   desc: 'Clear out leaves, debris, and blockages so water drains away from your home — not into it.',  price: '$89',  icon: GutterIcon },
   { id: 'window-cleaning',         code: 'LNT-002', name: 'Window Cleaning',   desc: 'Streak-free windows, inside and out. We bring the supplies — you just enjoy the view.',       price: '$119', icon: WindowIcon },
   { id: 'pressure-washing',        code: 'LNT-003', name: 'Pressure Washing',  desc: 'Blast years of grime off your driveway, patio, deck, or siding. Results you can see.',        price: '$149', icon: PressureIcon },
-  { id: 'house-cleaning-standard', code: 'LNT-004', name: 'House Cleaning',    desc: 'A thorough clean of every room — floors, surfaces, bathrooms, and kitchen. Top-to-bottom.',   price: '$129', icon: HouseIcon },
-  { id: 'house-cleaning-deep',     code: 'LNT-005', name: 'Deep Clean',        desc: 'Our most thorough package. Perfect for move-ins, move-outs, or a full seasonal reset.',       price: '$229', icon: DeepIcon },
-  { id: 'lawn-mowing',             code: 'LNT-006', name: 'Lawn Mowing',       desc: 'A neatly cut, edged lawn without lifting a finger. Consistent results every visit.',           price: '$99',  icon: LawnIcon },
+  { id: 'house-cleaning-standard', code: 'LNT-004', name: 'House Cleaning',    desc: 'A thorough clean of every room — floors, surfaces, bathrooms, and kitchen. Top-to-bottom.',   price: '$129', icon: HouseIcon, disabled: true },
+  { id: 'house-cleaning-deep',     code: 'LNT-005', name: 'Deep Clean',        desc: 'Our most thorough package. Perfect for move-ins, move-outs, or a full seasonal reset.',       price: '$229', icon: DeepIcon, disabled: true },
+  { id: 'lawn-mowing',             code: 'LNT-006', name: 'Lawn Mowing',       desc: 'A neatly cut, edged lawn without lifting a finger. Consistent results every visit.',           price: '$99',  icon: LawnIcon, disabled: true },
 ];
 
 const TESTIMONIALS = [
@@ -240,30 +240,41 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/10">
-            {SERVICES.map(({ id, code, name, desc, price, icon: ServiceIcon }) => (
-              <div key={id} className="bg-white p-6 flex flex-col gap-5">
-                <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 border border-black/15 flex items-center justify-center">
-                    <ServiceIcon />
+            {SERVICES.map(({ id, code, name, desc, price, icon: ServiceIcon, disabled }) => (
+              <div key={id} className="relative group bg-white overflow-hidden flex flex-col">
+                {disabled && (
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <span className="bg-black text-white text-[8px] font-bold tracking-[0.2em] px-4 py-2 uppercase font-mono shadow-2xl">
+                      Coming Soon
+                    </span>
                   </div>
-                  <span className="text-[10px] font-mono text-black/25 tracking-wider">{code}</span>
-                </div>
+                )}
+                
+                <div className={`p-6 flex flex-col gap-5 flex-1 ${disabled ? 'opacity-30 grayscale pointer-events-none select-none' : ''}`}>
+                  <div className="flex items-start justify-between">
+                    <div className="w-9 h-9 border border-black/15 flex items-center justify-center">
+                      <ServiceIcon />
+                    </div>
+                    <span className="text-[10px] font-mono text-black/25 tracking-wider">{code}</span>
+                  </div>
 
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-black mb-1.5">{name}</p>
-                  <p className="text-[12px] text-black/45 leading-relaxed">{desc}</p>
-                </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-black mb-1.5">{name}</p>
+                    <p className="text-[12px] text-black/45 leading-relaxed">{desc}</p>
+                  </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-black/8">
-                  <span className="text-[11px] font-bold text-black tracking-wider uppercase">
-                    From {price}
-                  </span>
-                  <button
-                    onClick={() => navigate('/login')}
-                    className="px-4 h-7 border border-black/20 text-[10px] font-bold tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-colors"
-                  >
-                    BOOK NOW
-                  </button>
+                  <div className="flex items-center justify-between pt-4 border-t border-black/8">
+                    <span className="text-[11px] font-bold text-black tracking-wider uppercase">
+                      From {price}
+                    </span>
+                    <button
+                      onClick={() => !disabled && navigate('/login')}
+                      disabled={disabled}
+                      className="px-4 h-7 border border-black/20 text-[10px] font-bold tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-colors disabled:cursor-not-allowed"
+                    >
+                      BOOK NOW
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -354,12 +365,12 @@ export default function LandingPage() {
               GET STARTED AS A PRO
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-            <a
-              href="#how-it-works"
+            <Link
+              to="/blog/what-a-pro-does"
               className="px-7 h-11 border border-black/25 text-black text-[11px] font-bold tracking-[0.2em] uppercase flex items-center hover:border-black transition-colors"
             >
               HOW IT WORKS
-            </a>
+            </Link>
           </div>
         </div>
       </section>

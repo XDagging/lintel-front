@@ -16,6 +16,7 @@ export default function Checkout() {
   const {
     selectedServices, confirmedAddress, notes, promoCode, scheduledAt,
     setNotes, setPromoCode, setScheduledAt, setCurrentJobId, reset,
+    quotes, quotesReady,
   } = useBookingStore();
 
   const [creating, setCreating] = useState(false);
@@ -28,12 +29,13 @@ export default function Checkout() {
     enabled: selectedServices.length > 0,
   });
 
-  if (selectedServices.length === 0 || !confirmedAddress) return <Navigate to="/book" replace />;
+  if (selectedServices.length === 0 || !confirmedAddress || !quotesReady) return <Navigate to="/book" replace />;
   if (!serviceList) return null;
 
   const selectedServiceObjects = serviceList.filter((s) => selectedServices.includes(s.id));
   const hasBundle = selectedServiceObjects.length > 1;
-  const subtotal = selectedServiceObjects.reduce((sum, s) => sum + s.price, 0);
+  const priceFor = (svc: typeof selectedServiceObjects[number]) => quotes[svc.id] ?? svc.price;
+  const subtotal = selectedServiceObjects.reduce((sum, s) => sum + priceFor(s), 0);
   const discountAmount = hasBundle ? subtotal * BUNDLE_DISCOUNT : 0;
   const total = subtotal - discountAmount;
 
@@ -116,14 +118,14 @@ export default function Checkout() {
                   {hasBundle ? (
                     <>
                       <p className="text-uber-gray-400 text-sm line-through leading-tight">
-                        {formatCurrency(svc.price)}
+                        {formatCurrency(priceFor(svc))}
                       </p>
                       <p className="font-bold text-uber-green text-lg leading-tight">
-                        {formatCurrency(svc.price * (1 - BUNDLE_DISCOUNT))}
+                        {formatCurrency(priceFor(svc) * (1 - BUNDLE_DISCOUNT))}
                       </p>
                     </>
                   ) : (
-                    <p className="font-black text-black text-2xl">{formatCurrency(svc.price)}</p>
+                    <p className="font-black text-black text-2xl">{formatCurrency(priceFor(svc))}</p>
                   )}
                 </div>
               </div>

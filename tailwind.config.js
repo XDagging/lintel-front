@@ -28,6 +28,15 @@ export default {
       borderRadius: {
         DEFAULT: '8px',
       },
+      keyframes: {
+        progressSlide: {
+          '0%': { transform: 'translateX(-150%)' },
+          '100%': { transform: 'translateX(450%)' },
+        },
+      },
+      animation: {
+        'progress-slide': 'progressSlide 1.4s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

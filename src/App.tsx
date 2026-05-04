@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Header } from './components/Header';
@@ -11,6 +11,8 @@ import Checkout from './pages/Checkout';
 import JobTracking from './pages/JobTracking';
 import JobsList from './pages/JobsList';
 import WorkerDashboard from './pages/WorkerDashboard';
+import WorkerPendingDashboard from './pages/WorkerPendingDashboard';
+import WorkerSettings from './pages/WorkerSettings';
 import WorkerRegister from './pages/WorkerRegister';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
@@ -21,35 +23,42 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30000 } },
 });
 
+function workerHome(user: { role: string; isApproved?: boolean }) {
+  if (user.role !== 'worker') return '/book';
+  return user.isApproved === false ? '/worker/pending' : '/worker/dashboard';
+}
+
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuthStore();
-
-  if (user) return <Navigate to={user.role === 'worker' ? '/worker/dashboard' : '/book'} replace />;
+  if (user) return <Navigate to={workerHome(user)} replace />;
   return <>{children}</>;
 }
 
-function ProtectedRoute({ children, workerOnly = false }: { children: React.ReactNode; workerOnly?: boolean }) {
+function ProtectedRoute({
+  children,
+  workerOnly = false,
+  requireApproved = false,
+}: {
+  children: React.ReactNode;
+  workerOnly?: boolean;
+  requireApproved?: boolean;
+}) {
   const { user } = useAuthStore();
 
-  console.log("This is the user retrieved from the protected route:", user)
   if (!user) return <Navigate to="/login" replace />;
-  if (workerOnly && user.role !== 'worker') {
-    console.log("tried to access worker place without being a worker")
-    return <Navigate to="/book" replace />;
-  }
-
-
-  if (!workerOnly && user.role === 'worker') { 
-    console.log("Dashboard")
-    return <Navigate to="/worker/dashboard" replace />};
+  if (workerOnly && user.role !== 'worker') return <Navigate to="/book" replace />;
+  if (requireApproved && user.isApproved === false) return <Navigate to="/worker/pending" replace />;
+  if (!workerOnly && user.role === 'worker') return <Navigate to={workerHome(user)} replace />;
   return <>{children}</>;
 }
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { user } = useAuthStore();
+  const location = useLocation();
+  const isWorkerRoute = location.pathname.startsWith('/worker/');
   return (
     <>
-      {user && <Header />}
+      {user && !isWorkerRoute && <Header />}
       {children}
     </>
   );
@@ -74,7 +83,9 @@ export default function App() {
               <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
               <Route path="/jobs" element={<ProtectedRoute><JobsList /></ProtectedRoute>} />
               <Route path="/jobs/:id" element={<ProtectedRoute><JobTracking /></ProtectedRoute>} />
-              <Route path="/worker/dashboard" element={<ProtectedRoute workerOnly><WorkerDashboard /></ProtectedRoute>} />
+              <Route path="/worker/dashboard" element={<ProtectedRoute workerOnly requireApproved><WorkerDashboard /></ProtectedRoute>} />
+              <Route path="/worker/settings" element={<ProtectedRoute workerOnly requireApproved><WorkerSettings /></ProtectedRoute>} />
+              <Route path="/worker/pending" element={<ProtectedRoute workerOnly><WorkerPendingDashboard /></ProtectedRoute>} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
