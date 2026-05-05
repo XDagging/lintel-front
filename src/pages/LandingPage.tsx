@@ -17,22 +17,22 @@ const SERVICES = [
 
 const TESTIMONIALS = [
   {
-    name: 'Marcus Chen',
+    name: 'Carlos Hernandez',
     role: 'Homeowner · Bethesda, MD',
     rating: 5,
-    quote: '"I was skeptical about a high schooler cleaning my gutters, but Marcus showed up on time, did a thorough job, and left my driveway spotless. Will book again."',
+    quote: '"I never really expected a good job done for this cheap by a couple of teenagers, but I am pretty happy. Would recommend."',
   },
   {
-    name: 'Sarah Jenkins',
-    role: 'Homeowner · Silver Spring, MD',
+    name: 'Cecile Lorillou',
+    role: 'Homeowner · Bethesda, MD',
     rating: 5,
-    quote: '"Lintel vetted the student before sending them over. Knowing the work is insured made all the difference. My windows look better than when a professional did them."',
+    quote: '"Got my windows cleaned nice and quick. They let me inspect before payment. Very professional"',
   },
   {
-    name: 'David Miller',
+    name: 'Google Review',
     role: 'Homeowner · Rockville, MD',
     rating: 4,
-    quote: '"Booked a deep clean on a Tuesday, had someone at my door Thursday morning. The whole process felt as smooth as ordering an Uber. Genuinely impressed."',
+    quote: '"Left my driveway and patio looking great! definitely will be calling them again"',
   },
 ];
 

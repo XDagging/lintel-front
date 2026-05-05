@@ -151,7 +151,7 @@ export default function Home() {
 
       <div className="fixed inset-0 top-16 flex bg-white">
         {/* Left Panel */}
-        <div className="w-[500px] flex-shrink-0 overflow-y-auto px-8 py-10 border-r border-uber-gray-100">
+        <div className="w-full md:w-[500px] md:flex-shrink-0 overflow-y-auto px-4 md:px-8 py-10 md:border-r border-uber-gray-100">
           {/* Greeting */}
           <div className="mb-8">
             <h1 className="text-4xl font-black text-black leading-tight">
@@ -268,8 +268,8 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Right Panel - Map */}
-        <div className="flex-1">
+        {/* Right Panel - Map (hidden on mobile) */}
+        <div className="hidden md:block flex-1">
           <MapView coordinates={coordinates} />
         </div>
       </div>

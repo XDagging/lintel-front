@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutGrid, Calendar, DollarSign, User, Settings, HelpCircle, Power } from 'lucide-react';
+import { LayoutGrid, Calendar, DollarSign, User, Settings, HelpCircle, Power, Menu, X } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '../store/authStore';
 import { workers } from '../lib/api';
@@ -32,18 +33,39 @@ export function WorkerLayout({ children }: { children: React.ReactNode }) {
     onSuccess: () => refetch(),
   });
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? 'W';
   const workerId = `HP-${user?.uuid?.slice(0, 4).toUpperCase() ?? '0000'}`;
   const isAvailable = profile?.isAvailable ?? true;
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div className="flex h-screen bg-white overflow-hidden">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 md:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-52 flex-shrink-0 border-r border-uber-gray-100 flex flex-col">
+      <aside className={cn(
+        'fixed inset-y-0 left-0 z-30 w-52 flex-shrink-0 border-r border-uber-gray-100 flex flex-col bg-white transition-transform duration-200',
+        'md:static md:translate-x-0',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      )}>
         {/* Logo */}
-        <div className="px-5 pt-6 pb-5 border-b border-uber-gray-100">
-          <p className="font-black text-black text-base leading-none tracking-tight">Lintel</p>
-          <p className="text-[9px] text-uber-gray-400 uppercase tracking-widest mt-1">Worker Portal</p>
+        <div className="px-5 pt-6 pb-5 border-b border-uber-gray-100 flex items-start justify-between">
+          <div>
+            <p className="font-black text-black text-base leading-none tracking-tight">Lintel</p>
+            <p className="text-[9px] text-uber-gray-400 uppercase tracking-widest mt-1">Worker Portal</p>
+          </div>
+          <button onClick={closeSidebar} className="md:hidden p-1 -mr-1 hover:bg-uber-gray-100 rounded-lg transition-colors">
+            <X className="w-4 h-4 text-uber-gray-400" />
+          </button>
         </div>
 
         {/* Clock In */}
@@ -73,6 +95,7 @@ export function WorkerLayout({ children }: { children: React.ReactNode }) {
               <Link
                 key={label}
                 to={href}
+                onClick={closeSidebar}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 text-sm transition-colors rounded-r',
                   isActive
@@ -106,6 +129,7 @@ export function WorkerLayout({ children }: { children: React.ReactNode }) {
           <div className="px-2 pb-4 space-y-0.5">
             <Link
               to="/worker/settings"
+              onClick={closeSidebar}
               className={cn(
                 'flex items-center gap-3 px-3 py-2 text-sm rounded transition-colors',
                 location.pathname === '/worker/settings' ? 'text-black font-semibold' : 'text-uber-gray-500 hover:text-black'
@@ -128,8 +152,16 @@ export function WorkerLayout({ children }: { children: React.ReactNode }) {
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center justify-between px-6 h-14 border-b border-uber-gray-100 flex-shrink-0">
-          <p className="font-bold text-black text-sm">Worker Dashboard</p>
+        <header className="flex items-center justify-between px-4 md:px-6 h-14 border-b border-uber-gray-100 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden p-2 -ml-2 hover:bg-uber-gray-100 rounded-lg transition-colors"
+            >
+              <Menu className="w-5 h-5 text-black" />
+            </button>
+            <p className="font-bold text-black text-sm">Worker Dashboard</p>
+          </div>
           <div className="flex items-center gap-3">
             <span className="text-[10px] font-bold text-uber-gray-400 uppercase tracking-widest border border-uber-gray-200 px-2.5 py-1 rounded">
               {user?.isApproved === false ? 'Pending Approval' : 'Active'}
