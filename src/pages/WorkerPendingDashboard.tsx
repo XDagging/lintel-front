@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { Building2, CheckCircle, Loader2, Circle, ExternalLink } from 'lucide-react';
+import { Building2, CheckCircle, Loader2, Circle, ExternalLink, LogOut } from 'lucide-react';
 import { WorkerLayout } from '../components/WorkerLayout';
 import { useAuthStore } from '../store/authStore';
 import { workers } from '../lib/api';
 
 export default function WorkerPendingDashboard() {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const firstName = user?.name?.split(' ')[0] ?? 'Pro';
 
   const { data: profile } = useQuery({
@@ -182,6 +182,13 @@ export default function WorkerPendingDashboard() {
         {/* Footer */}
         <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-uber-gray-300 border-t border-uber-gray-100 pt-4">
           <span>System Stability: 99.98%</span>
+          <button
+            onClick={logout}
+            className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-uber-gray-400 hover:text-black transition-colors"
+          >
+            <LogOut className="w-3 h-3" />
+            Sign Out
+          </button>
           <span>Build V1.0.0-Pro</span>
         </div>
       </div>

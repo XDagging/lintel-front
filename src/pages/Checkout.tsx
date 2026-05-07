@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { stripePromise } from '../lib/stripe';
 import { ChevronLeft, Tag, X, Sparkles } from 'lucide-react';
 import { useBookingStore } from '../store/bookingStore';
 import { useQuery } from '@tanstack/react-query';
@@ -52,6 +53,8 @@ export default function Checkout() {
     try {
       let jobId: string;
       let jobServiceType: string;
+      let requiresAction = false;
+      let clientSecret: string | undefined;
 
       if (hasBundle) {
         const res = await jobs.createBundle({
@@ -64,6 +67,8 @@ export default function Checkout() {
         });
         jobId = res.data.job.uuid;
         jobServiceType = 'bundle';
+        requiresAction = res.data.requiresAction;
+        clientSecret = res.data.clientSecret;
       } else {
         const res = await jobs.create({
           serviceType: selectedServices[0],
@@ -75,6 +80,19 @@ export default function Checkout() {
         });
         jobId = res.data.job.uuid;
         jobServiceType = selectedServices[0];
+        requiresAction = res.data.requiresAction;
+        clientSecret = res.data.clientSecret;
+      }
+
+      if (requiresAction && clientSecret) {
+        const stripe = await stripePromise;
+        if (!stripe) throw new Error('Stripe failed to load');
+        const { error } = await stripe.handleNextAction({ clientSecret });
+        if (error) {
+          toast({ title: 'Payment authentication failed', description: error.message, variant: 'destructive' });
+          return;
+        }
+        await jobs.activate(jobId, jobServiceType as typeof selectedServices[0] | 'bundle');
       }
 
       setCurrentJobId(jobId);

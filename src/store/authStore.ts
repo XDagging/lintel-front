@@ -9,6 +9,7 @@ interface AuthUser {
   address?: string;
   name?: string;
   img?: string;
+  profileImageUrl?: string | null;
   promoCode?: string;
   isApproved?: boolean;
 }

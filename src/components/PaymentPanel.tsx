@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { CreditCard } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { users } from '../lib/api';
 import type { SavedCard } from '../lib/api';
 import { StripePayment } from './StripePayment';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY ?? '');
+import { stripePromise } from '../lib/stripe';
 
 const APPEARANCE = {
   theme: 'stripe' as const,

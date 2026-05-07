@@ -51,7 +51,7 @@ export interface Job {
   outbound_request?: string;
   price: number;
   tipAmount?: number;
-  status: 'open' | 'accepted' | 'in-progress' | 'completed' | 'confirmed' | 'disputed' | 'cancelled';
+  status: 'open' | 'pending_payment' | 'accepted' | 'in-progress' | 'completed' | 'confirmed' | 'disputed' | 'cancelled';
   scheduledAt?: string;
   notes?: string;
   isRated?: boolean;
@@ -65,6 +65,7 @@ export interface Worker {
   rating: number;
   ratingCount: number;
   img?: string;
+  profileImageUrl?: string;
   bio?: string;
   promoCode: string;
   isAvailable: boolean;
@@ -98,7 +99,7 @@ export const jobs = {
     notes?: string;
     promoCode?: string;
     paymentMethodId?: string;
-  }) => api.post<{ job: Job; clientSecret: string }>('/jobs', data),
+  }) => api.post<{ job: Job; clientSecret?: string; requiresAction: boolean }>('/jobs', data),
   createBundle: (data: {
     serviceTypes: ServiceType[];
     address: string;
@@ -106,7 +107,9 @@ export const jobs = {
     notes?: string;
     promoCode?: string;
     paymentMethodId?: string;
-  }) => api.post<{ job: Job }>('/jobs/bundle', data),
+  }) => api.post<{ job: Job; clientSecret?: string; requiresAction: boolean }>('/jobs/bundle', data),
+  activate: (id: string, serviceType: ServiceType | 'bundle') =>
+    api.post<{ success: boolean }>(`/jobs/${id}/activate`, { serviceType }),
   list: () => api.get<Job[]>('/jobs'),
   get: (id: string, serviceType: ServiceType | 'bundle') =>
     api.get<Job>(`/jobs/${id}`, { params: { serviceType } }),
@@ -131,7 +134,15 @@ export const workers = {
   profile: () => api.get<Worker>('/workers/profile'),
   updateProfile: (data: FormData) =>
     api.put('/workers/profile', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadProfileImage: (blob: Blob) => {
+    const fd = new FormData();
+    fd.append('image', blob, 'profile.jpg');
+    return api.post<{ profileImageUrl: string }>('/workers/me/profile-image', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
   stripeOnboarding: () => api.get<{ url: string }>('/workers/stripe/onboarding-link'),
+  payout: () => api.post<{ jobsPaid: number; totalAmount: number }>('/workers/payout'),
 };
 
 export const users = {

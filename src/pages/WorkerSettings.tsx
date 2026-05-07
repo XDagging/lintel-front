@@ -1,17 +1,19 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Camera, Loader2, CheckCircle, ExternalLink, LogOut } from 'lucide-react';
+import { Camera, Loader2, CheckCircle, ExternalLink, LogOut, DollarSign } from 'lucide-react';
 import { WorkerLayout } from '../components/WorkerLayout';
 import { useAuthStore } from '../store/authStore';
 import { workers } from '../lib/api';
 import { toast } from '../hooks/useToast';
 import { useNavigate } from 'react-router-dom';
+import { ImageCropper } from '../components/ImageCropper';
 
 export default function WorkerSettings() {
   const { user, updateUser, logout } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   const { data: profile } = useQuery({
     queryKey: ['worker-profile-settings'],
@@ -44,12 +46,12 @@ export default function WorkerSettings() {
   });
 
   const photoMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const fd = new FormData();
-      fd.append('image', file);
-      await workers.updateProfile(fd);
+    mutationFn: async (blob: Blob) => {
+      const res = await workers.uploadProfileImage(blob);
+      return res.data.profileImageUrl;
     },
-    onSuccess: () => {
+    onSuccess: (profileImageUrl) => {
+      updateUser({ profileImageUrl });
       queryClient.invalidateQueries({ queryKey: ['worker-profile-settings'] });
       toast({ title: 'Photo updated' });
     },
@@ -58,8 +60,37 @@ export default function WorkerSettings() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) photoMutation.mutate(file);
+    if (file) {
+      setCropFile(file);
+      e.target.value = '';
+    }
   };
+
+  const handleCrop = (blob: Blob) => {
+    setCropFile(null);
+    photoMutation.mutate(blob);
+  };
+
+  const [payoutResult, setPayoutResult] = useState<{ jobsPaid: number; totalAmount: number } | null>(null);
+
+  const payoutMutation = useMutation({
+    mutationFn: () => workers.payout().then((r) => r.data),
+    onSuccess: (data) => {
+      setPayoutResult(data);
+      if (data.jobsPaid === 0) {
+        toast({ title: 'No unpaid jobs', description: 'You have no confirmed jobs pending payout.' });
+      } else {
+        toast({
+          title: `Payout initiated`,
+          description: `$${data.totalAmount.toFixed(2)} across ${data.jobsPaid} job${data.jobsPaid !== 1 ? 's' : ''} transferred to your account.`,
+        });
+      }
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error ?? 'Something went wrong. Please try again.';
+      toast({ title: 'Payout failed', description: msg, variant: 'destructive' });
+    },
+  });
 
   const workerId = `HP-${user?.uuid?.slice(0, 4).toUpperCase() ?? '0000'}`;
 
@@ -74,9 +105,9 @@ export default function WorkerSettings() {
           <p className="text-[10px] font-bold uppercase tracking-widest text-uber-gray-400 mb-4">Profile Photo</p>
           <div className="flex items-center gap-4">
             <div className="relative">
-              {profile?.img || user?.img ? (
+              {profile?.profileImageUrl || user?.profileImageUrl || profile?.img || user?.img ? (
                 <img
-                  src={profile?.img ?? user?.img}
+                  src={profile?.profileImageUrl ?? user?.profileImageUrl ?? profile?.img ?? user?.img}
                   alt={user?.name ?? ''}
                   className="w-16 h-16 rounded-full object-cover"
                 />
@@ -100,9 +131,12 @@ export default function WorkerSettings() {
                 <Camera className="w-3.5 h-3.5" />
                 Change photo
               </button>
-              <p className="text-[10px] text-uber-gray-400 mt-1.5">JPG or PNG, max 5MB</p>
+              <p className="text-[10px] text-uber-gray-400 mt-1.5">JPG, PNG, or WebP · max 2 MB · cropped to 320×320</p>
             </div>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            {cropFile && (
+              <ImageCropper file={cropFile} onCrop={handleCrop} onCancel={() => setCropFile(null)} />
+            )}
           </div>
         </section>
 
@@ -204,6 +238,38 @@ export default function WorkerSettings() {
                   Set up Stripe <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )
+            )}
+          </div>
+        </section>
+
+        {/* Earnings */}
+        <section className="mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-uber-gray-400 mb-4">Earnings</p>
+          <div className="border border-uber-gray-100 rounded-xl p-4">
+            <div className="mb-3">
+              <p className="text-sm font-semibold text-black">Request Payout</p>
+              <p className="text-xs text-uber-gray-400 mt-0.5">Transfer earnings from all confirmed jobs to your Stripe account.</p>
+            </div>
+            {payoutResult && payoutResult.jobsPaid > 0 && (
+              <div className="flex items-center gap-2 mb-3 text-uber-green text-xs font-semibold">
+                <CheckCircle className="w-4 h-4" />
+                ${payoutResult.totalAmount.toFixed(2)} paid out across {payoutResult.jobsPaid} job{payoutResult.jobsPaid !== 1 ? 's' : ''}
+              </div>
+            )}
+            <button
+              onClick={() => { setPayoutResult(null); payoutMutation.mutate(); }}
+              disabled={payoutMutation.isPending || !profile?.stripeOnboardingComplete}
+              className="flex items-center gap-2 h-10 px-4 bg-black text-white text-sm font-bold rounded-lg hover:bg-uber-gray-800 transition-colors disabled:opacity-40"
+            >
+              {payoutMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <DollarSign className="w-4 h-4" />
+              )}
+              {payoutMutation.isPending ? 'Processing…' : 'Pay out earnings'}
+            </button>
+            {!profile?.stripeOnboardingComplete && (
+              <p className="text-xs text-uber-gray-400 mt-2">Complete Stripe Connect setup above before requesting a payout.</p>
             )}
           </div>
         </section>
