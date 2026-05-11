@@ -18,6 +18,8 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
+import NotFound from './pages/NotFound';
+import AdminDashboard from './pages/AdminDashboard';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30000 } },
@@ -26,6 +28,12 @@ const queryClient = new QueryClient({
 function workerHome(user: { role: string; isApproved?: boolean }) {
   if (user.role !== 'worker') return '/book';
   return user.isApproved === false ? '/worker/pending' : '/worker/dashboard';
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user } = useAuthStore();
+  if (!user?.isAdmin) return <Navigate to="/" replace />;
+  return <>{children}</>;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
@@ -45,12 +53,14 @@ function ProtectedRoute({
 }) {
   const { user } = useAuthStore();
 
-  if (!user) return <Navigate to="/login" replace />;
-  if (workerOnly && user.role !== 'worker') return <Navigate to="/book" replace />;
+  if (!user) return <NotFound />;
+  if (workerOnly && user.role !== 'worker') return <NotFound />;
   if (requireApproved && user.isApproved === false) return <Navigate to="/worker/pending" replace />;
   if (!workerOnly && user.role === 'worker') return <Navigate to={workerHome(user)} replace />;
   return <>{children}</>;
 }
+
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { user } = useAuthStore();
@@ -58,6 +68,11 @@ function Layout({ children }: { children: React.ReactNode }) {
   const isWorkerRoute = location.pathname.startsWith('/worker/');
   return (
     <>
+      {isLocalhost && (
+        <div style={{ background: '#f59e0b', color: '#000', textAlign: 'center', padding: '4px 0', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em' }}>
+          YOU ARE IN DEV MODE
+        </div>
+      )}
       {user && !isWorkerRoute && <Header />}
       {children}
     </>
@@ -87,7 +102,9 @@ export default function App() {
               <Route path="/worker/settings" element={<ProtectedRoute workerOnly requireApproved><WorkerSettings /></ProtectedRoute>} />
               <Route path="/worker/pending" element={<ProtectedRoute workerOnly><WorkerPendingDashboard /></ProtectedRoute>} />
 
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
           <Toaster />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MapPin, CheckCircle, Loader2, Tag, KeyRound, AlertTriangle, X, Calendar, FileText, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { jobs, workers } from '../lib/api';
 import type { Job, ServiceType } from '../lib/api';
 import { formatCurrency } from '../lib/utils';
@@ -114,6 +115,7 @@ function JobDetailModal({ job, onAccept, accepting, onClose }: {
 
 export default function WorkerDashboard() {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [detailJob, setDetailJob] = useState<Job | null>(null);
@@ -177,9 +179,19 @@ export default function WorkerDashboard() {
     <WorkerLayout>
     <div className="max-w-2xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-black text-black">Hey, {user?.name?.split(' ')[0] ?? 'Pro'}</h1>
-          <p className="text-uber-gray-500 mt-1">Here's what's happening today</p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-black text-black">Hey, {user?.name?.split(' ')[0] ?? 'Pro'}</h1>
+            <p className="text-uber-gray-500 mt-1">Here's what's happening today</p>
+          </div>
+          {user?.isAdmin && (
+            <button
+              onClick={() => navigate('/admin')}
+              className="text-xs font-semibold bg-black text-white px-3 py-1.5 rounded-lg hover:bg-uber-gray-800 transition-colors"
+            >
+              Go to Admin Mode
+            </button>
+          )}
         </div>
 
         {/* Stats */}

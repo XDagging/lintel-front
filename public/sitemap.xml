@@ -8,6 +8,12 @@
   </url>
 
   <url>
+    <loc>https://uselintel.pro/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
     <loc>https://uselintel.pro/worker/register</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

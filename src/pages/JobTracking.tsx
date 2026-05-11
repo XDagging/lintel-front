@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, CheckCircle, Loader2, KeyRound, AlertTriangle, Calendar, FileText, Clock } from 'lucide-react';
+import { ChevronLeft, CheckCircle, Loader2, KeyRound, AlertTriangle, Calendar, FileText, Clock, ShieldCheck } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { jobs } from '../lib/api';
 import type { ServiceType } from '../lib/api';
@@ -17,6 +17,8 @@ const STEPS = [
   { key: 'completed', label: 'Ready for review' },
   { key: 'confirmed', label: 'Confirmed' },
 ];
+
+const PRO_ASSIGNED_STATUSES = ['accepted', 'in-progress', 'completed', 'confirmed'];
 
 function fmt(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
@@ -91,6 +93,7 @@ export default function JobTracking() {
 
   const statusOrder = ['open', 'accepted', 'in-progress', 'completed', 'confirmed'];
   const currentIdx = statusOrder.indexOf(job.status);
+  const showProCard = PRO_ASSIGNED_STATUSES.includes(job.status) && !!job.workerName;
 
   const serviceLabel = job.serviceTypes?.length
     ? job.serviceTypes.map((s) => s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())).join(' + ')
@@ -98,11 +101,12 @@ export default function JobTracking() {
 
   return (
     <div className="min-h-screen bg-white pt-16">
-      <div className="max-w-xl mx-auto px-6 py-10">
+      <div className="max-w-5xl mx-auto px-6 py-10">
         <button onClick={() => navigate('/jobs')} className="flex items-center gap-1 text-sm font-semibold text-uber-gray-500 hover:text-black transition-colors mb-8">
           <ChevronLeft className="w-4 h-4" /> My Jobs
         </button>
 
+        {/* Job header — full width above the grid */}
         <div className="mb-8">
           <p className="text-xs text-uber-gray-400 uppercase tracking-widest mb-1">Job #{id?.slice(0, 8).toUpperCase()}</p>
           {job.serviceTypes?.length ? (
@@ -119,137 +123,197 @@ export default function JobTracking() {
           <p className="text-uber-gray-500 text-sm mt-1">📍 {job.address}</p>
         </div>
 
-        {/* Job details card */}
-        <div className="border border-uber-gray-200 rounded-xl p-5 mb-4 space-y-3">
-          <p className="text-xs font-bold text-uber-gray-400 uppercase tracking-widest">Job Details</p>
-
-          <div className="flex items-start gap-3">
-            <Clock className="w-4 h-4 text-uber-gray-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-uber-gray-400">Requested</p>
-              <p className="text-sm font-semibold text-black">{fmt(job.createdAt)}</p>
-            </div>
-          </div>
-
-          {job.scheduledAt && (
-            <div className="flex items-start gap-3">
-              <Calendar className="w-4 h-4 text-uber-gray-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-uber-gray-400">Scheduled for</p>
-                <p className="text-sm font-semibold text-black">{fmt(job.scheduledAt)}</p>
-              </div>
-            </div>
-          )}
-
-          {job.notes && (
-            <div className="flex items-start gap-3">
-              <FileText className="w-4 h-4 text-uber-gray-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-uber-gray-400">Special instructions</p>
-                <p className="text-sm text-black">{job.notes}</p>
-              </div>
-            </div>
-          )}
-
-          <div className="pt-2 border-t border-uber-gray-100 flex items-center justify-between">
-            <span className="text-xs text-uber-gray-400">Total price</span>
-            <span className="font-black text-black">{formatCurrency(job.price)}</span>
-          </div>
-
-          {job.status === 'confirmed' && job.isRated && (
-            <div className="text-xs text-uber-gray-400 text-center pt-1">⭐ You've already rated this job</div>
-          )}
-        </div>
-
-        {/* Status stepper */}
-        <div className="border border-uber-gray-200 rounded-xl p-5 mb-4">
+        {/* Two-column grid: left = job content, right = pro card */}
+        <div className={cn(
+          'grid grid-cols-1 gap-8',
+          showProCard && 'md:grid-cols-[1fr_340px]'
+        )}>
+          {/* Left column */}
           <div className="space-y-4">
-            {STEPS.map((step) => {
-              const stepIdx = statusOrder.indexOf(step.key);
-              const done = stepIdx <= currentIdx;
-              const active = step.key === job.status || (step.key === 'accepted' && job.status === 'in-progress');
-              return (
-                <div key={step.key} className="flex items-center gap-3">
-                  <div className={cn(
-                    'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all',
-                    done ? 'bg-black' : 'bg-uber-gray-100'
-                  )}>
-                    {done
-                      ? <CheckCircle className="w-4 h-4 text-white" />
-                      : <div className="w-2 h-2 rounded-full bg-uber-gray-300" />}
-                  </div>
-                  <span className={cn('text-sm font-semibold', done ? 'text-black' : 'text-uber-gray-300')}>
-                    {step.label}
-                    {active && <span className="ml-2 text-uber-gray-400 font-normal text-xs">← current</span>}
-                  </span>
+            {/* Job details card */}
+            <div className="border border-uber-gray-200 rounded-xl p-5 space-y-3">
+              <p className="text-xs font-bold text-uber-gray-400 uppercase tracking-widest">Job Details</p>
+
+              <div className="flex items-start gap-3">
+                <Clock className="w-4 h-4 text-uber-gray-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-uber-gray-400">Requested</p>
+                  <p className="text-sm font-semibold text-black">{fmt(job.createdAt)}</p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
 
-        {/* Status message */}
-        <div className="bg-uber-gray-50 rounded-xl p-4 mb-4">
-          <p className="font-semibold text-black text-sm">
-            {job.status === 'open' && '🔍 Looking for a pro near you...'}
-            {job.status === 'accepted' && '✅ Your pro is on the way!'}
-            {job.status === 'in-progress' && '🔧 Work in progress'}
-            {job.status === 'completed' && '✅ Work done — enter your confirmation code'}
-            {job.status === 'confirmed' && `✅ Complete — ${formatCurrency(job.price)}${job.tipAmount ? ` + ${formatCurrency(job.tipAmount)} tip` : ''}`}
-            {job.status === 'disputed' && '⚠️ Dispute under review'}
-          </p>
-        </div>
+              {job.scheduledAt && (
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-4 h-4 text-uber-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-uber-gray-400">Scheduled for</p>
+                    <p className="text-sm font-semibold text-black">{fmt(job.scheduledAt)}</p>
+                  </div>
+                </div>
+              )}
 
-        {/* Confirmation code */}
-        {job.status === 'completed' && (
-          <div className="border-2 border-black rounded-xl p-5 mb-4">
-            <div className="flex items-center gap-2 mb-4">
-              <KeyRound className="w-5 h-5" />
-              <p className="font-black text-black">Enter confirmation code</p>
+              {job.notes && (
+                <div className="flex items-start gap-3">
+                  <FileText className="w-4 h-4 text-uber-gray-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-uber-gray-400">Special instructions</p>
+                    <p className="text-sm text-black">{job.notes}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-uber-gray-100 flex items-center justify-between">
+                <span className="text-xs text-uber-gray-400">Total price</span>
+                <span className="font-black text-black">{formatCurrency(job.price)}</span>
+              </div>
+
+              {job.status === 'confirmed' && job.isRated && (
+                <div className="text-xs text-uber-gray-400 text-center pt-1">⭐ You've already rated this job</div>
+              )}
             </div>
-            <p className="text-sm text-uber-gray-500 mb-4">Ask your pro for their 6-digit code. Only enter it if you're satisfied with the work.</p>
-            <div className="flex gap-2">
-              <input
-                value={confirmCode}
-                onChange={(e) => setConfirmCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="000000"
-                maxLength={6}
-                className="flex-1 bg-uber-gray-50 rounded-lg px-4 h-12 text-xl font-mono font-black tracking-widest text-center text-black outline-none focus:bg-uber-gray-100 transition-colors"
-              />
+
+            {/* Status stepper */}
+            <div className="border border-uber-gray-200 rounded-xl p-5">
+              <div className="space-y-4">
+                {STEPS.map((step) => {
+                  const stepIdx = statusOrder.indexOf(step.key);
+                  const done = stepIdx <= currentIdx;
+                  const active = step.key === job.status || (step.key === 'accepted' && job.status === 'in-progress');
+                  return (
+                    <div key={step.key} className="flex items-center gap-3">
+                      <div className={cn(
+                        'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all',
+                        done ? 'bg-black' : 'bg-uber-gray-100'
+                      )}>
+                        {done
+                          ? <CheckCircle className="w-4 h-4 text-white" />
+                          : <div className="w-2 h-2 rounded-full bg-uber-gray-300" />}
+                      </div>
+                      <span className={cn('text-sm font-semibold', done ? 'text-black' : 'text-uber-gray-300')}>
+                        {step.label}
+                        {active && <span className="ml-2 text-uber-gray-400 font-normal text-xs">← current</span>}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Status message */}
+            <div className="bg-uber-gray-50 rounded-xl p-4">
+              <p className="font-semibold text-black text-sm">
+                {job.status === 'open' && '🔍 Looking for a pro near you...'}
+                {job.status === 'accepted' && '✅ Your pro is on the way!'}
+                {job.status === 'in-progress' && '🔧 Work in progress'}
+                {job.status === 'completed' && '✅ Work done — enter your confirmation code'}
+                {job.status === 'confirmed' && `✅ Complete — ${formatCurrency(job.price)}${job.tipAmount ? ` + ${formatCurrency(job.tipAmount)} tip` : ''}`}
+                {job.status === 'disputed' && '⚠️ Dispute under review'}
+              </p>
+            </div>
+
+            {/* Confirmation code */}
+            {job.status === 'completed' && (
+              <div className="border-2 border-black rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <KeyRound className="w-5 h-5" />
+                  <p className="font-black text-black">Enter confirmation code</p>
+                </div>
+                <p className="text-sm text-uber-gray-500 mb-4">Ask your pro for their 6-digit code. Only enter it if you're satisfied with the work.</p>
+                <div className="flex gap-2">
+                  <input
+                    value={confirmCode}
+                    onChange={(e) => setConfirmCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="000000"
+                    maxLength={6}
+                    className="flex-1 bg-uber-gray-50 rounded-lg px-4 h-12 text-xl font-mono font-black tracking-widest text-center text-black outline-none focus:bg-uber-gray-100 transition-colors"
+                  />
+                  <button
+                    onClick={handleConfirm}
+                    disabled={confirmCode.length !== 6 || confirming}
+                    className="px-6 h-12 bg-black text-white font-bold rounded-lg hover:bg-uber-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Rate button for already-confirmed but unrated jobs */}
+            {job.status === 'confirmed' && !job.isRated && (
               <button
-                onClick={handleConfirm}
-                disabled={confirmCode.length !== 6 || confirming}
-                className="px-6 h-12 bg-black text-white font-bold rounded-lg hover:bg-uber-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                onClick={() => setShowRating(true)}
+                className="w-full h-12 border-2 border-amber-400 text-amber-600 font-bold rounded-xl hover:bg-amber-50 transition-colors flex items-center justify-center gap-2"
               >
-                {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm'}
+                ⭐ Rate your pro
               </button>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button onClick={() => navigate('/')} className="flex-1 h-12 bg-uber-gray-100 text-black font-semibold rounded-xl hover:bg-uber-gray-200 transition-colors text-sm">
+                Back to Home
+              </button>
+              {['accepted', 'in-progress', 'completed'].includes(job.status) && (
+                <button
+                  onClick={() => setShowDispute(true)}
+                  className="flex items-center gap-2 px-4 h-12 border border-uber-red text-uber-red font-semibold rounded-xl hover:bg-red-50 transition-colors text-sm"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                  Dispute
+                </button>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Rate button for already-confirmed but unrated jobs */}
-        {job.status === 'confirmed' && !job.isRated && (
-          <button
-            onClick={() => setShowRating(true)}
-            className="w-full h-12 mb-4 border-2 border-amber-400 text-amber-600 font-bold rounded-xl hover:bg-amber-50 transition-colors flex items-center justify-center gap-2"
-          >
-            ⭐ Rate your pro
-          </button>
-        )}
+          {/* Right column — Assigned Pro card */}
+          {showProCard && (
+            <div className="self-start">
+              <div className="border border-uber-gray-200 rounded-xl overflow-hidden">
+                {/* Card header */}
+                <div className="bg-black px-4 py-3 flex items-center justify-between">
+                  <span className="text-xs font-bold text-white uppercase tracking-widest">Assigned Pro</span>
+                  <ShieldCheck className="w-4 h-4 text-white opacity-80" />
+                </div>
 
-        {/* Actions */}
-        <div className="flex gap-3">
-          <button onClick={() => navigate('/')} className="flex-1 h-12 bg-uber-gray-100 text-black font-semibold rounded-xl hover:bg-uber-gray-200 transition-colors text-sm">
-            Back to Home
-          </button>
-          {['accepted', 'in-progress', 'completed'].includes(job.status) && (
-            <button
-              onClick={() => setShowDispute(true)}
-              className="flex items-center gap-2 px-4 h-12 border border-uber-red text-uber-red font-semibold rounded-xl hover:bg-red-50 transition-colors text-sm"
-            >
-              <AlertTriangle className="w-4 h-4" />
-              Dispute
-            </button>
+                {/* Card body */}
+                <div className="p-5">
+                  <div className="flex items-center gap-4">
+                    {/* Avatar */}
+                    {job.workerProfileImageUrl ? (
+                      <img
+                        src={job.workerProfileImageUrl}
+                        alt={job.workerName}
+                        className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center flex-shrink-0">
+                        <span className="text-white text-xl font-black">
+                          {job.workerName!.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Name and rating */}
+                    <div className="min-w-0">
+                      <p className="font-black text-black text-lg leading-tight truncate">{job.workerName}</p>
+                      {job.workerRating != null && (
+                        <p className="text-sm text-uber-gray-500 mt-0.5">
+                          <span className="text-amber-500">★</span> {job.workerRating.toFixed(1)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Background checked badge */}
+                  <div className="mt-4">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-uber-gray-200 text-xs font-semibold text-uber-gray-500 uppercase tracking-wide">
+                      <ShieldCheck className="w-3 h-3" />
+                      Background Checked
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

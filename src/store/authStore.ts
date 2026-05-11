@@ -12,6 +12,7 @@ interface AuthUser {
   profileImageUrl?: string | null;
   promoCode?: string;
   isApproved?: boolean;
+  isAdmin?: boolean;
 }
 
 interface AuthStore {

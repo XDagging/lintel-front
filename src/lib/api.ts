@@ -57,6 +57,9 @@ export interface Job {
   isRated?: boolean;
   is_completed: boolean;
   createdAt: string;
+  workerName?: string;
+  workerProfileImageUrl?: string;
+  workerRating?: number;
 }
 
 export interface Worker {
@@ -143,6 +146,43 @@ export const workers = {
   },
   stripeOnboarding: () => api.get<{ url: string }>('/workers/stripe/onboarding-link'),
   payout: () => api.post<{ jobsPaid: number; totalAmount: number }>('/workers/payout'),
+};
+
+export interface AdminWorker {
+  uuid: string;
+  name: string;
+  bio?: string;
+  profileImageUrl?: string;
+  img?: string;
+  rating: number;
+  ratingCount: number;
+  promoCode: string;
+  isAvailable: boolean;
+  isApproved: boolean;
+  stripeOnboardingComplete: boolean;
+  createdAt: string;
+  jobCount: number;
+  totalEarnings: number;
+}
+
+export interface AdminPayout {
+  workerUuid: string;
+  jobUuid: string;
+  serviceType: string;
+  baseAmount: number;
+  tipAmount: number;
+  type: 'service' | 'promo';
+  status: 'pending' | 'paid';
+  createdAt: string;
+  paidAt?: string;
+}
+
+export const admin = {
+  getWorkers: () => api.get<AdminWorker[]>('/admin/workers'),
+  getWorkerJobs: (id: string) => api.get<Job[]>(`/admin/workers/${id}/jobs`),
+  getWorkerPayouts: (id: string) => api.get<AdminPayout[]>(`/admin/workers/${id}/payouts`),
+  patchWorker: (id: string, updates: { isAvailable?: boolean; isApproved?: boolean }) =>
+    api.patch<{ success: boolean }>(`/admin/workers/${id}`, updates),
 };
 
 export const users = {
