@@ -34,10 +34,7 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
   const fetchPredictions = async (input: string) => {
     if (!input.trim() || input.length < 3) { setPredictions([]); return; }
     try {
-      const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=address&key=${key}`
-      );
+      const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(input)}`);
       const data = await res.json();
       setPredictions(data.predictions ?? []);
       setOpen(true);
@@ -63,10 +60,9 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
     navigator.geolocation.getCurrentPosition(
       async ({ coords: { latitude: lat, longitude: lng } }) => {
         try {
-          const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-          const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`);
+          const res = await fetch(`/api/places/geocode?latlng=${lat},${lng}`);
           const data = await res.json();
-          const addr = data.results?.[0]?.formatted_address ?? '';
+          const addr = data.address ?? '';
           onChange(addr);
           onConfirm(addr);
         } finally { setGeoLoading(false); }

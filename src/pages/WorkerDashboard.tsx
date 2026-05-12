@@ -237,21 +237,13 @@ export default function WorkerDashboard() {
               <p className="text-xs text-uber-gray-500 mb-2 italic">"{job.notes}"</p>
             )}
             <p className="text-2xl font-black text-black mb-4">{formatCurrency(job.price * 0.4)} <span className="text-sm font-normal text-uber-gray-400">your payout</span></p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => completeMutation.mutate({ jobId: job.uuid, serviceType: job.serviceType })}
-                disabled={completeMutation.isPending}
-                className="flex-1 h-12 bg-black text-white font-bold rounded-xl hover:bg-uber-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
-              >
-                {completeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><CheckCircle className="w-4 h-4" /> Mark complete</>}
-              </button>
-              <button
-                onClick={() => { setSelectedJob(job); setShowDispute(true); }}
-                className="px-4 h-12 border border-uber-red text-uber-red font-semibold rounded-xl hover:bg-red-50 transition-colors"
-              >
-                <AlertTriangle className="w-4 h-4" />
-              </button>
-            </div>
+            <button
+              onClick={() => completeMutation.mutate({ jobId: job.uuid, serviceType: job.serviceType })}
+              disabled={completeMutation.isPending}
+              className="w-full h-12 bg-black text-white font-bold rounded-xl hover:bg-uber-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
+            >
+              {completeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><CheckCircle className="w-4 h-4" /> Mark complete</>}
+            </button>
           </div>
         ))}
 
@@ -265,13 +257,21 @@ export default function WorkerDashboard() {
             </p>
             <p className="text-2xl font-black text-black mb-1">{formatCurrency(job.price * 0.4)} <span className="text-sm font-normal text-uber-gray-400">your payout</span></p>
             <p className="text-xs text-uber-gray-400 mb-4">Customer needs to enter your 6-digit code to release payment.</p>
-            <button
-              onClick={() => regenerateCodeMutation.mutate({ jobId: job.uuid, serviceType: job.serviceType })}
-              disabled={regenerateCodeMutation.isPending}
-              className="w-full h-12 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
-            >
-              {regenerateCodeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><KeyRound className="w-4 h-4" /> Show confirmation code</>}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => regenerateCodeMutation.mutate({ jobId: job.uuid, serviceType: job.serviceType })}
+                disabled={regenerateCodeMutation.isPending}
+                className="flex-1 h-12 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
+              >
+                {regenerateCodeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><KeyRound className="w-4 h-4" /> Show confirmation code</>}
+              </button>
+              <button
+                onClick={() => { setSelectedJob(job); setShowDispute(true); }}
+                className="px-4 h-12 border border-uber-red text-uber-red font-semibold rounded-xl hover:bg-red-50 transition-colors"
+              >
+                <AlertTriangle className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         ))}
 

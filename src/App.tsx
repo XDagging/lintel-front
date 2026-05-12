@@ -20,6 +20,7 @@ import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/AdminDashboard';
+import QuotePreview from './pages/QuotePreview';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30000 } },
@@ -93,6 +94,7 @@ export default function App() {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/blog"    element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/quote-preview" element={<PublicRoute><QuotePreview /></PublicRoute>} />
 
               <Route path="/book" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />

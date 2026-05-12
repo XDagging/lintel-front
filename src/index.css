@@ -15,6 +15,17 @@
   ::-webkit-scrollbar-thumb { @apply bg-uber-gray-300 rounded-full; }
 }
 
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.1s ease-in-out infinite;
+}
+
 @layer utilities {
   .uber-input {
     @apply w-full bg-uber-gray-50 text-black placeholder-uber-gray-400 rounded-lg px-4 h-12 text-sm outline-none transition-colors;

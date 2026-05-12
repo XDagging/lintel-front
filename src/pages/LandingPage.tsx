@@ -56,7 +56,7 @@ export default function LandingPage() {
   const handleAddressConfirm = (addr: string) => {
     if (!addr.trim()) return;
     setAddress(addr, true);
-    navigate('/login');
+    navigate('/quote-preview');
   };
 
   return (
@@ -118,7 +118,7 @@ export default function LandingPage() {
             </p>
 
             {/* Address input */}
-            <div className="border border-black/20 bg-white max-w-md">
+            <div className="border border-[#008060]/40 bg-white max-w-md">
               <div className="p-4 pb-3">
                 <p className="text-[10px] font-mono font-semibold text-black/40 tracking-[0.2em] uppercase mb-3">
                   Your Address
@@ -137,7 +137,7 @@ export default function LandingPage() {
                 <button
                   onClick={() => handleAddressConfirm(heroAddress)}
                   disabled={!heroAddress.trim()}
-                  className="w-full h-11 bg-black text-white font-bold text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 hover:bg-black/80 transition-colors disabled:bg-black/20 disabled:cursor-not-allowed"
+                  className="w-full h-11 bg-[#008060] text-white font-bold text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 hover:bg-[#006b50] transition-colors disabled:bg-black/20 disabled:cursor-not-allowed"
                 >
                   SEE PRICES
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -268,7 +268,7 @@ export default function LandingPage() {
                       From {price}
                     </span>
                     <button
-                      onClick={() => !disabled && navigate('/login')}
+                      onClick={() => !disabled && navigate('/quote-preview')}
                       disabled={disabled}
                       className="px-4 h-7 border border-black/20 text-[10px] font-bold tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-colors disabled:cursor-not-allowed"
                     >

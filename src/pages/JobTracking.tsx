@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, CheckCircle, Loader2, KeyRound, AlertTriangle, Calendar, FileText, Clock, ShieldCheck } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { jobs } from '../lib/api';
 import type { ServiceType } from '../lib/api';
+import { useAuthStore } from '../store/authStore';
 import { Layers } from 'lucide-react';
 import { TipModal } from '../components/TipModal';
 import { DisputeModal } from '../components/DisputeModal';
@@ -34,17 +35,29 @@ export default function JobTracking() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const { user } = useAuthStore();
   const [confirmCode, setConfirmCode] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [showRating, setShowRating] = useState(false);
   const [showDispute, setShowDispute] = useState(false);
+  const [statement, setStatement] = useState('');
 
   const { data: job, isLoading } = useQuery({
     queryKey: ['job', id, serviceType],
     queryFn: () => jobs.get(id!, serviceType).then((r) => r.data),
     enabled: !!id && !!serviceType,
     refetchInterval: (q) => ['open', 'accepted'].includes(q.state.data?.status ?? '') ? 5000 : false,
+  });
+
+  const statementMutation = useMutation({
+    mutationFn: (text: string) => jobs.submitStatement(id!, serviceType, text),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job', id, serviceType] });
+      toast({ title: 'Statement submitted' });
+      setStatement('');
+    },
+    onError: () => toast({ title: 'Failed to submit statement', variant: 'destructive' }),
   });
 
   const handleConfirm = async () => {
@@ -211,6 +224,65 @@ export default function JobTracking() {
               </p>
             </div>
 
+            {/* Dispute statement panel */}
+            {job.status === 'disputed' && (() => {
+              const isCustomer = user?.uuid === job.inbound_request;
+              const myStatement = isCustomer ? job.dispute?.customerStatement : job.dispute?.workerStatement;
+              const theirStatement = isCustomer ? job.dispute?.workerStatement : job.dispute?.customerStatement;
+              const myLabel = isCustomer ? 'Your statement' : 'Your statement';
+              const theirLabel = isCustomer ? "Worker's statement" : "Customer's statement";
+
+              return (
+                <div className="border border-uber-gray-200 rounded-xl p-4 space-y-4">
+                  <p className="text-xs font-bold text-uber-gray-400 uppercase tracking-widest">Dispute Details</p>
+
+                  {job.dispute?.reason && (
+                    <div>
+                      <p className="text-xs font-semibold text-uber-gray-500 mb-1">Filed reason</p>
+                      <p className="text-sm text-black">{job.dispute.reason}</p>
+                    </div>
+                  )}
+
+                  {theirStatement && (
+                    <div className="bg-uber-gray-50 rounded-lg px-3 py-2">
+                      <p className="text-xs font-semibold text-uber-gray-500 mb-1">{theirLabel}</p>
+                      <p className="text-sm text-black">{theirStatement}</p>
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-xs font-semibold text-uber-gray-500 mb-1">{myLabel}</p>
+                    {myStatement ? (
+                      <p className="text-sm text-black bg-uber-gray-50 rounded-lg px-3 py-2">{myStatement}</p>
+                    ) : (
+                      <div className="space-y-2">
+                        <textarea
+                          value={statement}
+                          onChange={(e) => setStatement(e.target.value)}
+                          placeholder="Share your side of the story…"
+                          className="w-full h-24 px-3 py-2 bg-uber-gray-50 rounded-lg text-sm text-black placeholder-uber-gray-400 resize-none outline-none focus:bg-uber-gray-100 transition-colors"
+                        />
+                        <button
+                          onClick={() => statementMutation.mutate(statement)}
+                          disabled={!statement.trim() || statementMutation.isPending}
+                          className="w-full h-10 bg-black text-white font-semibold rounded-xl hover:bg-uber-gray-800 transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {statementMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit statement'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {job.dispute?.adminResponse && (
+                    <div className="border-t border-uber-gray-100 pt-3">
+                      <p className="text-xs font-semibold text-uber-gray-500 mb-1">Admin response</p>
+                      <p className="text-sm text-black">{job.dispute.adminResponse}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
             {/* Confirmation code */}
             {job.status === 'completed' && (
               <div className="border-2 border-black rounded-xl p-5">
@@ -253,7 +325,7 @@ export default function JobTracking() {
               <button onClick={() => navigate('/')} className="flex-1 h-12 bg-uber-gray-100 text-black font-semibold rounded-xl hover:bg-uber-gray-200 transition-colors text-sm">
                 Back to Home
               </button>
-              {['accepted', 'in-progress', 'completed'].includes(job.status) && (
+              {job.status === 'completed' && (
                 <button
                   onClick={() => setShowDispute(true)}
                   className="flex items-center gap-2 px-4 h-12 border border-uber-red text-uber-red font-semibold rounded-xl hover:bg-red-50 transition-colors text-sm"

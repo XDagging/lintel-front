@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronDown, ChevronUp, ArrowLeft, User } from 'lucide-react';
+import { ChevronDown, ChevronUp, ArrowLeft, User, AlertTriangle } from 'lucide-react';
 import { admin, AdminWorker, AdminPayout, Job } from '../lib/api';
 import { formatCurrency } from '../lib/utils';
 import { toast } from '../hooks/useToast';
@@ -171,21 +171,137 @@ function WorkerCard({ worker }: { worker: AdminWorker }) {
   );
 }
 
+function DisputeCard({ job }: { job: Job }) {
+  const [adminResponse, setAdminResponse] = useState('');
+  const queryClient = useQueryClient();
+
+  const resolveMutation = useMutation({
+    mutationFn: (resolution: 'cancelled' | 'charged') =>
+      admin.resolveDispute(job.uuid, job.serviceType, resolution, adminResponse),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'disputes'] });
+      toast({ title: 'Dispute resolved' });
+    },
+    onError: () => toast({ title: 'Resolution failed', variant: 'destructive' }),
+  });
+
+  const canResolve = adminResponse.trim().length > 0 && !resolveMutation.isPending;
+  const serviceLabel = job.serviceType === 'bundle' && job.serviceTypes?.length
+    ? job.serviceTypes.map(fmtServiceType).join(' + ')
+    : fmtServiceType(job.serviceType);
+
+  return (
+    <div className="bg-white rounded-2xl border border-uber-gray-100 shadow-sm overflow-hidden">
+      <div className="px-4 py-4 space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <span className="font-black text-black text-base">{serviceLabel}</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">Disputed</span>
+            </div>
+            <p className="text-xs text-uber-gray-400 mt-0.5">
+              Job #{job.uuid.slice(0, 8).toUpperCase()} · {fmt(job.createdAt)}
+            </p>
+          </div>
+          <span className="font-black text-black text-lg">{formatCurrency(job.price)}</span>
+        </div>
+
+        <div className="text-xs text-uber-gray-500 space-y-1">
+          <p>
+            <span className="font-semibold text-uber-gray-700">Customer:</span> {job.inbound_request.slice(0, 8)}
+            {job.dispute?.filedBy === job.inbound_request && (
+              <span className="ml-1.5 px-1.5 py-0.5 rounded bg-red-100 text-red-600 font-semibold text-xs">filed</span>
+            )}
+          </p>
+          {job.outbound_request && (
+            <p>
+              <span className="font-semibold text-uber-gray-700">Worker:</span> {job.outbound_request.slice(0, 8)}
+              {job.dispute?.filedBy === job.outbound_request && (
+                <span className="ml-1.5 px-1.5 py-0.5 rounded bg-red-100 text-red-600 font-semibold text-xs">filed</span>
+              )}
+            </p>
+          )}
+        </div>
+
+        <div className="bg-uber-gray-50 rounded-lg px-3 py-2 space-y-2">
+          <div>
+            <p className="text-xs font-semibold text-uber-gray-400 uppercase tracking-widest mb-1">Dispute Reason</p>
+            <p className="text-sm text-black">
+              {job.dispute?.reason ?? <span className="italic text-uber-gray-400">No reason recorded</span>}
+            </p>
+            {job.dispute?.filedAt && (
+              <p className="text-xs text-uber-gray-400 mt-1">Filed {fmt(job.dispute.filedAt)}</p>
+            )}
+          </div>
+          {job.dispute?.customerStatement && (
+            <div className="border-t border-uber-gray-200 pt-2">
+              <p className="text-xs font-semibold text-uber-gray-400 uppercase tracking-widest mb-1">Customer's Statement</p>
+              <p className="text-sm text-black">{job.dispute.customerStatement}</p>
+            </div>
+          )}
+          {job.dispute?.workerStatement && (
+            <div className="border-t border-uber-gray-200 pt-2">
+              <p className="text-xs font-semibold text-uber-gray-400 uppercase tracking-widest mb-1">Worker's Statement</p>
+              <p className="text-sm text-black">{job.dispute.workerStatement}</p>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-uber-gray-400 uppercase tracking-widest mb-1">
+            Admin Response <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={adminResponse}
+            onChange={(e) => setAdminResponse(e.target.value)}
+            placeholder="Explain the resolution to both parties…"
+            className="w-full h-24 px-3 py-2 bg-uber-gray-50 rounded-lg text-sm text-black placeholder-uber-gray-400 resize-none outline-none focus:bg-uber-gray-100 transition-colors"
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => resolveMutation.mutate('cancelled')}
+            disabled={!canResolve}
+            className="flex-1 h-10 bg-uber-gray-100 text-black font-semibold rounded-xl hover:bg-uber-gray-200 transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Cancel Hold
+          </button>
+          <button
+            onClick={() => resolveMutation.mutate('charged')}
+            disabled={!canResolve}
+            className="flex-1 h-10 bg-black text-white font-semibold rounded-xl hover:bg-uber-gray-800 transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Charge Card
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const [tab, setTab] = useState<'workers' | 'disputes'>('workers');
 
-  const { data: workers, isLoading, isError } = useQuery({
+  const { data: workers, isLoading: workersLoading, isError: workersError } = useQuery({
     queryKey: ['admin', 'workers'],
     queryFn: () => admin.getWorkers().then((r) => r.data),
+  });
+
+  const { data: disputes, isLoading: disputesLoading, isError: disputesError } = useQuery({
+    queryKey: ['admin', 'disputes'],
+    queryFn: () => admin.getDisputes().then((r) => r.data),
   });
 
   return (
     <div className="min-h-screen bg-uber-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <p className="text-xs text-uber-gray-400 uppercase tracking-widest font-semibold">Admin</p>
-            <h1 className="text-3xl font-black text-black mt-0.5">Workers</h1>
+            <h1 className="text-3xl font-black text-black mt-0.5">Dashboard</h1>
           </div>
           <button
             onClick={() => navigate('/worker/dashboard')}
@@ -196,25 +312,63 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {isLoading && (
-          <div className="text-center py-16 text-uber-gray-400">Loading workers...</div>
-        )}
+        <div className="flex gap-1 mb-6 bg-uber-gray-100 rounded-xl p-1">
+          <button
+            onClick={() => setTab('workers')}
+            className={`flex-1 h-9 rounded-lg text-sm font-semibold transition-colors ${tab === 'workers' ? 'bg-white text-black shadow-sm' : 'text-uber-gray-500 hover:text-black'}`}
+          >
+            Workers
+          </button>
+          <button
+            onClick={() => setTab('disputes')}
+            className={`flex-1 h-9 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 ${tab === 'disputes' ? 'bg-white text-black shadow-sm' : 'text-uber-gray-500 hover:text-black'}`}
+          >
+            Disputes
+            {disputes && disputes.length > 0 && (
+              <span className="w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-black">
+                {disputes.length}
+              </span>
+            )}
+          </button>
+        </div>
 
-        {isError && (
-          <div className="text-center py-16 text-red-500">Failed to load workers.</div>
-        )}
-
-        {workers && (
+        {tab === 'workers' && (
           <>
-            <p className="text-sm text-uber-gray-500 mb-4">{workers.length} worker{workers.length !== 1 ? 's' : ''}</p>
-            <div className="space-y-3">
-              {workers.map((w: AdminWorker) => (
-                <WorkerCard key={w.uuid} worker={w} />
-              ))}
-              {workers.length === 0 && (
-                <div className="text-center py-16 text-uber-gray-400">No workers yet.</div>
-              )}
-            </div>
+            {workersLoading && <div className="text-center py-16 text-uber-gray-400">Loading workers...</div>}
+            {workersError && <div className="text-center py-16 text-red-500">Failed to load workers.</div>}
+            {workers && (
+              <>
+                <p className="text-sm text-uber-gray-500 mb-4">{workers.length} worker{workers.length !== 1 ? 's' : ''}</p>
+                <div className="space-y-3">
+                  {workers.map((w: AdminWorker) => (
+                    <WorkerCard key={w.uuid} worker={w} />
+                  ))}
+                  {workers.length === 0 && (
+                    <div className="text-center py-16 text-uber-gray-400">No workers yet.</div>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {tab === 'disputes' && (
+          <>
+            {disputesLoading && <div className="text-center py-16 text-uber-gray-400">Loading disputes...</div>}
+            {disputesError && <div className="text-center py-16 text-red-500">Failed to load disputes.</div>}
+            {disputes && (
+              <>
+                <p className="text-sm text-uber-gray-500 mb-4">{disputes.length} open dispute{disputes.length !== 1 ? 's' : ''}</p>
+                <div className="space-y-3">
+                  {disputes.map((job: Job) => (
+                    <DisputeCard key={job.uuid} job={job} />
+                  ))}
+                  {disputes.length === 0 && (
+                    <div className="text-center py-16 text-uber-gray-400">No open disputes.</div>
+                  )}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

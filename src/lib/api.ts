@@ -60,6 +60,16 @@ export interface Job {
   workerName?: string;
   workerProfileImageUrl?: string;
   workerRating?: number;
+  dispute?: {
+    reason?: string;
+    filedAt?: string;
+    filedBy?: string;
+    customerStatement?: string;
+    workerStatement?: string;
+    adminResponse?: string;
+    resolvedAt?: string;
+    resolution?: 'cancelled' | 'charged';
+  };
 }
 
 export interface Worker {
@@ -129,6 +139,8 @@ export const jobs = {
     api.post<{ success: boolean }>(`/jobs/${id}/tip`, { serviceType, tipAmount, paymentMethodId }),
   dispute: (id: string, serviceType: ServiceType | 'bundle', reason: string) =>
     api.post(`/jobs/${id}/dispute`, { serviceType, reason }),
+  submitStatement: (id: string, serviceType: ServiceType | 'bundle', statement: string) =>
+    api.post<{ success: boolean }>(`/jobs/${id}/dispute/statement`, { serviceType, statement }),
   rate: (id: string, serviceType: ServiceType | 'bundle', rating: number) =>
     api.post<{ success: boolean; newRating: number; ratingCount: number }>(`/jobs/${id}/rate`, { serviceType, rating }),
 };
@@ -183,6 +195,13 @@ export const admin = {
   getWorkerPayouts: (id: string) => api.get<AdminPayout[]>(`/admin/workers/${id}/payouts`),
   patchWorker: (id: string, updates: { isAvailable?: boolean; isApproved?: boolean }) =>
     api.patch<{ success: boolean }>(`/admin/workers/${id}`, updates),
+  getDisputes: () => api.get<Job[]>('/admin/disputes'),
+  resolveDispute: (
+    jobId: string,
+    serviceType: ServiceType | 'bundle',
+    resolution: 'cancelled' | 'charged',
+    adminResponse: string
+  ) => api.post<{ success: boolean }>(`/admin/disputes/${jobId}/resolve`, { serviceType, resolution, adminResponse }),
 };
 
 export const users = {

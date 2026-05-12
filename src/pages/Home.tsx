@@ -183,14 +183,7 @@ export default function Home() {
             )}
 
             {address && !confirmedAddress && (
-              <button
-                onClick={() => handleAddressConfirm(address)}
-                disabled={savingAddress}
-                className="mt-2 ml-1 flex items-center gap-1.5 text-xs font-semibold text-black underline underline-offset-2 hover:no-underline disabled:opacity-40"
-              >
-                {savingAddress ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                Confirm this address
-              </button>
+              <p className="mt-2 ml-1 text-xs text-uber-gray-400">Select an address from the suggestions</p>
             )}
           </div>
 

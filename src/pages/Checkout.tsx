@@ -12,6 +12,48 @@ import { toast } from '../hooks/useToast';
 
 const BUNDLE_DISCOUNT = 0.1;
 
+function validateLocalScheduledAt(value: string): string | null {
+  const date = new Date(value);
+  if (date <= new Date()) return 'Scheduled time must be in the future';
+  const hour = date.getHours();
+  if (hour < 8 || hour >= 18) return 'Scheduling is only available between 8am and 6pm';
+  return null;
+}
+
+function toEasternIso(localDatetimeString: string): string {
+  const date = new Date(localDatetimeString);
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '00';
+  const offsetParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    timeZoneName: 'shortOffset',
+  }).formatToParts(date);
+  const tzName = offsetParts.find((p) => p.type === 'timeZoneName')?.value ?? 'GMT-5';
+  const match = tzName.match(/GMT([+-]\d+)/);
+  const offsetHours = match ? parseInt(match[1], 10) : -5;
+  const sign = offsetHours >= 0 ? '+' : '-';
+  const absHours = String(Math.abs(offsetHours)).padStart(2, '0');
+  const offset = `${sign}${absHours}:00`;
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}${offset}`;
+}
+
+function getScheduleMin(): string {
+  const now = new Date();
+  const today8am = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0);
+  const floor = now > today8am ? now : today8am;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${floor.getFullYear()}-${pad(floor.getMonth() + 1)}-${pad(floor.getDate())}T${pad(floor.getHours())}:${pad(floor.getMinutes())}`;
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const {
@@ -23,6 +65,7 @@ export default function Checkout() {
   const [creating, setCreating] = useState(false);
   const [promoInput, setPromoInput] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
 
   const { data: serviceList } = useQuery({
     queryKey: ['services'],
@@ -49,6 +92,12 @@ export default function Checkout() {
 
   const handlePay = async (paymentMethodId?: string) => {
     if (selectedServiceObjects.length === 0 || !confirmedAddress) return;
+
+    if (scheduledAt) {
+      const err = validateLocalScheduledAt(scheduledAt);
+      if (err) { setScheduleError(err); return; }
+    }
+
     setCreating(true);
     try {
       let jobId: string;
@@ -56,11 +105,13 @@ export default function Checkout() {
       let requiresAction = false;
       let clientSecret: string | undefined;
 
+      const scheduledAtEt = scheduledAt ? toEasternIso(scheduledAt) : undefined;
+
       if (hasBundle) {
         const res = await jobs.createBundle({
           serviceTypes: selectedServices,
           address: confirmedAddress,
-          scheduledAt: scheduledAt ?? undefined,
+          scheduledAt: scheduledAtEt,
           notes: notes || undefined,
           promoCode: promoCode || undefined,
           paymentMethodId,
@@ -73,7 +124,7 @@ export default function Checkout() {
         const res = await jobs.create({
           serviceType: selectedServices[0],
           address: confirmedAddress,
-          scheduledAt: scheduledAt ?? undefined,
+          scheduledAt: scheduledAtEt,
           notes: notes || undefined,
           promoCode: promoCode || undefined,
           paymentMethodId,
@@ -186,10 +237,17 @@ export default function Checkout() {
             <Input
               type="datetime-local"
               value={scheduledAt ?? ''}
-              onChange={(e) => setScheduledAt(e.target.value || null)}
-              min={new Date().toISOString().slice(0, 16)}
+              onChange={(e) => {
+                const val = e.target.value || null;
+                setScheduledAt(val);
+                setScheduleError(val ? validateLocalScheduledAt(val) : null);
+              }}
+              min={getScheduleMin()}
               className="[color-scheme:light]"
             />
+            {scheduleError && (
+              <p className="text-sm text-red-500 mt-1">{scheduleError}</p>
+            )}
           </div>
 
           <div>
