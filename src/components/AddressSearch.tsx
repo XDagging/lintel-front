@@ -23,7 +23,7 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const url = window.location.href.includes("localhost") ? "localhost:3001" : "api.uselintel.pro"
+  const url = window.location.href.includes("localhost") ? "http://localhost:3001" : "https://api.uselintel.pro"
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
