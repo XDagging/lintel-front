@@ -46,7 +46,6 @@ export default function Home() {
     setQuotes, setQuotesReady, quotes,
   } = useBookingStore();
 
-  const [savingAddress, setSavingAddress] = useState(false);
   const [showUpsell, setShowUpsell] = useState(false);
   const [quotesLoading, setQuotesLoading] = useState(false);
   const addressInitializedRef = useRef(false);
@@ -95,7 +94,6 @@ export default function Home() {
 
   const handleAddressConfirm = async (addr: string) => {
     setAddress(addr, true);
-    setSavingAddress(true);
     try {
       const [coords] = await Promise.all([
         geocodeAddress(addr),
@@ -104,7 +102,6 @@ export default function Home() {
       if (coords) setCoordinates(coords);
       updateUser({ address: addr });
     } catch { /* non-critical */ }
-    finally { setSavingAddress(false); }
     fetchQuotes(addr, serviceList);
   };
 

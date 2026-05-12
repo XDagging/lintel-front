@@ -23,6 +23,8 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const url = window.location.href.includes("localhost") ? "localhost:3001" : "api.uselintel.pro"
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
@@ -34,7 +36,7 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
   const fetchPredictions = async (input: string) => {
     if (!input.trim() || input.length < 3) { setPredictions([]); return; }
     try {
-      const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(input)}`);
+      const res = await fetch(url+ `/api/places/autocomplete?input=${encodeURIComponent(input)}`);
       const data = await res.json();
       setPredictions(data.predictions ?? []);
       setOpen(true);
@@ -60,7 +62,7 @@ export function AddressSearch({ value, onChange, onConfirm, placeholder, classNa
     navigator.geolocation.getCurrentPosition(
       async ({ coords: { latitude: lat, longitude: lng } }) => {
         try {
-          const res = await fetch(`/api/places/geocode?latlng=${lat},${lng}`);
+          const res = await fetch(url + `/api/places/geocode?latlng=${lat},${lng}`);
           const data = await res.json();
           const addr = data.address ?? '';
           onChange(addr);
