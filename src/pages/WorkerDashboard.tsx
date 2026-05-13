@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MapPin, CheckCircle, Loader2, Tag, KeyRound, AlertTriangle, X, Calendar, FileText, Clock } from 'lucide-react';
+import { MapPin, CheckCircle, Loader2, Tag, KeyRound, AlertTriangle, X, Calendar, FileText, Clock, History, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { jobs, workers } from '../lib/api';
 import type { Job, ServiceType } from '../lib/api';
@@ -113,6 +113,111 @@ function JobDetailModal({ job, onAccept, accepting, onClose }: {
   );
 }
 
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function PreviousPayoutsModal({ onClose }: { onClose: () => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['worker-prev-payouts'],
+    queryFn: () => workers.prevPayouts().then((r) => r.data),
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-uber-gray-100">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-uber-gray-400" />
+            <h3 className="font-black text-black text-xl">Previous Payouts</h3>
+          </div>
+          <button onClick={onClose} className="p-1.5 hover:bg-uber-gray-100 rounded-lg transition-colors">
+            <X className="w-4 h-4 text-uber-gray-400" />
+          </button>
+        </div>
+        <div className="px-6 py-4 max-h-80 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-uber-gray-300" /></div>
+          ) : !data?.length ? (
+            <p className="text-center text-uber-gray-400 text-sm py-8">No payouts yet</p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[10px] font-bold uppercase tracking-widest text-uber-gray-400 border-b border-uber-gray-100">
+                  <th className="pb-2">Date</th>
+                  <th className="pb-2 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((p, i) => (
+                  <tr key={i} className="border-b border-uber-gray-50 last:border-0">
+                    <td className="py-2.5 text-uber-gray-600">{fmtDate(p.paidAt)}</td>
+                    <td className="py-2.5 text-right font-black text-black">{formatCurrency(p.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PreviousJobsModal({ onClose }: { onClose: () => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['worker-prev-jobs'],
+    queryFn: () => workers.prevJobs().then((r) => r.data),
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-uber-gray-100">
+          <div className="flex items-center gap-2">
+            <History className="w-4 h-4 text-uber-gray-400" />
+            <h3 className="font-black text-black text-xl">Previous Jobs</h3>
+          </div>
+          <button onClick={onClose} className="p-1.5 hover:bg-uber-gray-100 rounded-lg transition-colors">
+            <X className="w-4 h-4 text-uber-gray-400" />
+          </button>
+        </div>
+        <div className="px-6 py-4 max-h-80 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-uber-gray-300" /></div>
+          ) : !data?.length ? (
+            <p className="text-center text-uber-gray-400 text-sm py-8">No completed jobs yet</p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[10px] font-bold uppercase tracking-widest text-uber-gray-400 border-b border-uber-gray-100">
+                  <th className="pb-2">Customer</th>
+                  <th className="pb-2">Service</th>
+                  <th className="pb-2 text-right">Earned</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((j) => {
+                  const serviceLabel = j.serviceType === 'bundle' && j.serviceTypes?.length
+                    ? j.serviceTypes.map((s) => fmtServiceType(s)).join(' + ')
+                    : fmtServiceType(j.serviceType);
+                  return (
+                    <tr key={j.uuid} className="border-b border-uber-gray-50 last:border-0">
+                      <td className="py-2.5 text-uber-gray-500 text-xs font-mono">{j.customerLabel}</td>
+                      <td className="py-2.5 text-uber-gray-600 capitalize text-xs">{serviceLabel}</td>
+                      <td className="py-2.5 text-right font-black text-black">{formatCurrency(j.price)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function WorkerDashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -120,6 +225,8 @@ export default function WorkerDashboard() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [detailJob, setDetailJob] = useState<Job | null>(null);
   const [showComplete, setShowComplete] = useState(false);
+  const [showPayoutsModal, setShowPayoutsModal] = useState(false);
+  const [showJobsModal, setShowJobsModal] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState('');
   const [showDispute, setShowDispute] = useState(false);
 
@@ -196,16 +303,34 @@ export default function WorkerDashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          {[
-            { label: 'Total earned', value: formatCurrency(totalEarnings) },
-            { label: 'Jobs done', value: String(completedJobs.length) },
-            { label: 'Rating', value: `${profile?.rating?.toFixed(1) ?? '5.0'} ★` },
-          ].map(({ label, value }) => (
-            <div key={label} className="border border-uber-gray-200 rounded-xl p-4">
-              <p className="text-xl font-black text-black">{value}</p>
-              <p className="text-xs text-uber-gray-400 mt-0.5">{label}</p>
+          <div className="border border-uber-gray-200 rounded-xl p-4 flex flex-col gap-2">
+            <div>
+              <p className="text-xl font-black text-black">{formatCurrency(totalEarnings)}</p>
+              <p className="text-xs text-uber-gray-400 mt-0.5">Total earned</p>
             </div>
-          ))}
+            <button
+              onClick={() => setShowPayoutsModal(true)}
+              className="text-[10px] font-bold uppercase tracking-widest text-uber-gray-500 hover:text-black transition-colors text-left"
+            >
+              View Previous payouts →
+            </button>
+          </div>
+          <div className="border border-uber-gray-200 rounded-xl p-4 flex flex-col gap-2">
+            <div>
+              <p className="text-xl font-black text-black">{String(completedJobs.length)}</p>
+              <p className="text-xs text-uber-gray-400 mt-0.5">Jobs done</p>
+            </div>
+            <button
+              onClick={() => setShowJobsModal(true)}
+              className="text-[10px] font-bold uppercase tracking-widest text-uber-gray-500 hover:text-black transition-colors text-left"
+            >
+              View Previous jobs →
+            </button>
+          </div>
+          <div className="border border-uber-gray-200 rounded-xl p-4">
+            <p className="text-xl font-black text-black">{profile?.rating?.toFixed(1) ?? '5.0'} ★</p>
+            <p className="text-xs text-uber-gray-400 mt-0.5">Rating</p>
+          </div>
         </div>
 
         {/* Promo code */}
@@ -354,6 +479,9 @@ export default function WorkerDashboard() {
       {showDispute && selectedJob && (
         <DisputeModal jobId={selectedJob.uuid} serviceType={selectedJob.serviceType} onClose={() => { setShowDispute(false); setSelectedJob(null); }} />
       )}
+
+      {showPayoutsModal && <PreviousPayoutsModal onClose={() => setShowPayoutsModal(false)} />}
+      {showJobsModal && <PreviousJobsModal onClose={() => setShowJobsModal(false)} />}
     </WorkerLayout>
   );
 }

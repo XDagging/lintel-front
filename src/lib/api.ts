@@ -158,6 +158,11 @@ export const workers = {
   },
   stripeOnboarding: () => api.get<{ url: string }>('/workers/stripe/onboarding-link'),
   payout: () => api.post<{ jobsPaid: number; totalAmount: number }>('/workers/payout'),
+  prevPayouts: () => api.get<{ paidAt: string; amount: number }[]>('/workers/prev_payouts'),
+  prevJobs: () =>
+    api.get<{ uuid: string; price: number; customerLabel: string; serviceType: string; serviceTypes?: string[] }[]>(
+      '/workers/prev_jobs'
+    ),
 };
 
 export interface AdminWorker {
