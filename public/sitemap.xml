@@ -20,9 +20,33 @@
   </url>
 
   <url>
+    <loc>https://uselintel.pro/services/gutter-cleaning</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/services/pressure-washing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/services/window-cleaning</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
     <loc>https://uselintel.pro/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/blog/what-a-pro-does</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <url>
@@ -45,6 +69,36 @@
 
   <url>
     <loc>https://uselintel.pro/blog/how-our-commission-works</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/blog/gutter-cleaning-cost-bethesda-md</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/blog/how-often-clean-gutters-maryland</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/blog/pressure-washing-driveway-maryland</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/blog/signs-gutters-need-cleaning</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://uselintel.pro/blog/window-cleaning-bethesda-md</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

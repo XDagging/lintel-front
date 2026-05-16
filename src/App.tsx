@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { HelmetProvider } from 'react-helmet-async';
 import { Header } from './components/Header';
 import { Toaster } from './components/Toaster';
 import { useAuthStore } from './store/authStore';
@@ -21,6 +22,9 @@ import BlogPost from './pages/BlogPost';
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/AdminDashboard';
 import QuotePreview from './pages/QuotePreview';
+import ServiceGutterCleaning from './pages/ServiceGutterCleaning';
+import ServicePressureWashing from './pages/ServicePressureWashing';
+import ServiceWindowCleaning from './pages/ServiceWindowCleaning';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30000 } },
@@ -82,6 +86,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
+    <HelmetProvider>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -94,6 +99,9 @@ export default function App() {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/blog"    element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/services/gutter-cleaning"  element={<ServiceGutterCleaning />} />
+              <Route path="/services/pressure-washing" element={<ServicePressureWashing />} />
+              <Route path="/services/window-cleaning"  element={<ServiceWindowCleaning />} />
               <Route path="/quote-preview" element={<PublicRoute><QuotePreview /></PublicRoute>} />
 
               <Route path="/book" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -113,5 +121,6 @@ export default function App() {
         </BrowserRouter>
       </QueryClientProvider>
     </GoogleOAuthProvider>
+    </HelmetProvider>
   );
 }

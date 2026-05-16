@@ -1,5 +1,6 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Clock } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { BLOG_POSTS } from './Blog';
 import logo from '../assets/logo.jpeg';
 
@@ -106,6 +107,10 @@ export default function BlogPost() {
 
   return (
     <div className="min-h-screen bg-white pb-20">
+      <Helmet>
+        <title>{post.title} | Lintel</title>
+        <meta name="description" content={post.excerpt} />
+      </Helmet>
 
       {/* Nav */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black">

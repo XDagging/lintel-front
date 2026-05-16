@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import logo from '../assets/logo.jpeg';
 
 export const BLOG_POSTS = [
@@ -242,6 +243,299 @@ Buy the equipment if you genuinely enjoy doing the work and do it frequently. If
     `,
   },
   {
+    slug: 'gutter-cleaning-cost-bethesda-md',
+    title: 'Gutter Cleaning Cost in Bethesda & Rockville, MD',
+    excerpt: 'What does gutter cleaning actually cost in Montgomery County? We break down the price by home size, explain what drives the cost, and show you what you\'re paying for.',
+    readTime: '4 min read',
+    date: 'May 10, 2026',
+    category: 'Tips & Advice',
+    content: `
+## What gutter cleaning costs in Montgomery County
+
+If you've ever searched for gutter cleaning in Bethesda or Rockville and gotten wildly different quotes — $75 from one company, $250 from another — you're not alone. The range is real, and there are legitimate reasons for it. Here's what actually drives the price.
+
+## The honest price range
+
+For a typical single-family home in the Bethesda and Rockville area, professional gutter cleaning costs **$89–$175**. Larger homes, homes with more linear footage of gutters, or gutters that haven't been cleaned in several years will fall toward the higher end.
+
+At Lintel, our pricing starts at **$89 for smaller homes** and scales with property size:
+
+| Home Size | Starting Price |
+|-----------|----------------|
+| Under 1,500 sq ft | $89 |
+| 1,500–2,500 sq ft | $109 |
+| 2,500+ sq ft | Custom quote |
+
+These are flat prices — no hidden fees, no "assessment charges," no post-job surprises.
+
+## What drives the cost
+
+### Linear footage of gutters
+
+The biggest variable. A standard ranch home might have 120 linear feet of gutters. A larger colonial in Bethesda or Potomac with dormers and complex rooflines can have 200+ feet. More gutter = more time = higher price.
+
+### How clogged the gutters are
+
+A home cleaned twice a year takes 45 minutes. Gutters that have been ignored for three years — compacted leaves, seedlings growing in the debris, nesting material — can take twice as long. The extra time is real labor.
+
+### Number of downspouts
+
+Downspouts are where blockages hide. A home with 4 downspouts that all need to be flushed and cleared takes longer than one with 2. Homes in Bethesda's older neighborhoods often have original downspout configurations that require extra attention.
+
+### Equipment and method
+
+Ground-level vacuum systems (what Lintel uses) are more efficient and safer than traditional ladder-and-hand-scooping methods. They're also better at removing fine debris that hand cleaning leaves behind. Pricing reflects the equipment investment.
+
+## What you're paying for — and what you're not
+
+A $89–$109 Lintel job includes full debris removal from all accessible gutters, downspout flushing, waste removal from the property, and a satisfaction guarantee. Your card isn't charged until you confirm the job is done.
+
+What you're **not** paying for: repairs, gutter guard removal/reinstallation, or work on rooflines requiring specialty equipment. If we see anything that needs attention during the clean, we'll note it — but that's a separate scope.
+
+## The hidden cost of skipping it
+
+Clogged gutters aren't just an aesthetic issue. In Montgomery County's heavy-rainfall climate, gutters that can't drain properly direct water against your foundation, into your soffit, and behind your fascia boards. Foundation water intrusion and fascia rot are common outcomes of deferred gutter maintenance — both significantly more expensive than a twice-yearly cleaning.
+
+## How often should you clean in the Bethesda area?
+
+Twice a year is the standard recommendation: once in late spring (after pollen and seed pods) and once in late fall (after leaves). Homes under heavy tree canopy — oaks and maples are everywhere in Bethesda, Chevy Chase, and Potomac — often benefit from a third cleaning in early fall.
+
+Ready to see what it costs for your home specifically? Enter your address and get an instant price.
+    `,
+  },
+  {
+    slug: 'how-often-clean-gutters-maryland',
+    title: 'How Often Should You Clean Your Gutters in Maryland?',
+    excerpt: 'The standard advice is "twice a year" — but Maryland\'s tree coverage and climate mean some homes need more. Here\'s how to figure out the right schedule for your property.',
+    readTime: '4 min read',
+    date: 'May 6, 2026',
+    category: 'Tips & Advice',
+    content: `
+## The answer depends on your trees, not just a calendar
+
+You've probably seen the generic advice: clean your gutters twice a year, spring and fall. That's a good baseline. But in Montgomery County, where tree canopy coverage is among the densest in the mid-Atlantic, the right answer for your specific property might be different.
+
+Here's how to think about it.
+
+## Why Maryland needs more frequent cleaning than most states
+
+Maryland sits in a climate zone with heavy spring pollen seasons, wet summers that accelerate organic growth, and dense fall leaf drop. The tree species common to Bethesda, Rockville, Potomac, and Chevy Chase — oak, maple, tulip poplar, sweetgum — drop at different times and in different forms:
+
+- **Spring**: Oak pollen catkins, maple seed pods (helicopters), and general debris from winter
+- **Early fall**: Sweetgum and tulip poplar drop seeds and leaves starting in September
+- **Late fall**: Oak and maple drop the heavy leaf loads that most homeowners think of
+
+This means a home with heavy tree coverage may see significant gutter loading three times in a year, not two.
+
+## The twice-a-year baseline
+
+For homes with moderate tree coverage in the Bethesda and Rockville area, two cleanings per year is the right call:
+
+**Spring cleaning (April–May)**: Clears winter debris, pollen, and seed pods before the rainy season. If your downspouts are blocked heading into June, you're directing water against your foundation every time it rains.
+
+**Fall cleaning (November–December)**: After the leaves are down. Wait until the maples and oaks have fully dropped — if you clean too early in October, you're cleaning again in two weeks.
+
+## When to add a third cleaning
+
+Consider scheduling a third cleaning if any of these apply to your property:
+
+- **Your yard has several large oaks or sweetgums**: These species drop seeds and early leaves in September, well before the main fall drop
+- **You've had downspout blockages**: A sign your gutters are filling faster than a twice-yearly schedule handles
+- **You're under a mature tree canopy**: Especially common in older Bethesda neighborhoods and parts of Chevy Chase where tree coverage is dense
+- **You've had water intrusion issues**: If you've had basement seepage or fascia damage, more frequent cleaning is cheap prevention
+
+## Signs your gutters need cleaning now
+
+You don't always have to wait for the schedule. Clean immediately if you notice:
+
+- **Water pouring over the gutter edges** during rain instead of down the downspout
+- **Plants growing from the gutter** — a sure sign of soil and debris accumulation
+- **Sagging gutters** — debris weight pulling the gutter away from the fascia
+- **Staining on siding** below the gutters — indicates overflow
+- **Mosquito activity** near the roofline — standing water in clogged gutters is a breeding ground
+
+## The simple rule for Montgomery County
+
+If you're under moderate tree coverage: clean in May and again in November. If you have heavy canopy — especially oaks — add a cleaning in September or early October. If you're not sure, err toward three times. The cost of an extra cleaning is trivial compared to the cost of water damage.
+
+Lintel serves all of Montgomery County: Bethesda, Rockville, Chevy Chase, Potomac, Silver Spring, Gaithersburg, and Germantown. See prices for your home at uselintel.pro.
+    `,
+  },
+  {
+    slug: 'pressure-washing-driveway-maryland',
+    title: 'Pressure Washing Your Driveway in Maryland: What to Know',
+    excerpt: 'Maryland\'s humid climate is unusually good at growing mold and algae on driveways. Here\'s what causes it, when to clean, and what to expect from a professional pressure washing service.',
+    readTime: '5 min read',
+    date: 'May 3, 2026',
+    category: 'Tips & Advice',
+    content: `
+## Why Maryland driveways get dirtier than you'd expect
+
+If you've noticed your concrete driveway developing a dark grey or greenish tint over the course of a year, you're seeing something specific to the mid-Atlantic climate: a combination of atmospheric soot, organic growth (mold, mildew, and algae), and mineral deposits from rain and sprinklers.
+
+Bethesda and Rockville sit in a humidity corridor that's ideal for biological growth on hard surfaces. Shaded driveways — common in tree-lined neighborhoods throughout Montgomery County — rarely dry completely between rain events, which gives algae the moisture it needs to establish. Once algae takes hold, the surface darkens progressively and becomes genuinely slippery when wet.
+
+## What a professional pressure washing actually removes
+
+A consumer garden hose can't touch most of what builds up on a driveway. Even a consumer-grade electric pressure washer doesn't run at high enough PSI to fully remove compacted organic growth. Here's what professional cleaning removes:
+
+**Organic growth**: Algae, mold, and mildew embedded in the surface texture of the concrete. This is the black and green discoloration. A commercial machine with the right detergent breaks down the biological material and clears it completely.
+
+**Atmospheric soot**: Fine particulate from vehicle traffic, especially on driveways near River Road, Rockville Pike, or Wisconsin Avenue. This accumulates as a grey film.
+
+**Oil stains**: Motor oil, transmission fluid, and tire marks. Requires a pre-treatment with a degreasing detergent, not just water pressure.
+
+**Mineral deposits**: Hard water and sprinkler spray leaves calcium deposits on concrete surfaces. High-pressure hot water removes what regular cleaning cannot.
+
+## Before and after: realistic expectations
+
+Professional pressure washing produces a dramatic visual result on most driveways. The surface after cleaning typically looks 3–5 years newer. Deep oil stains that have been sitting for years may lighten significantly but not disappear entirely — that's a chemistry limitation, not a technique one.
+
+For patios, decks, and stone surfaces, results depend on the material. Pavers and concrete look dramatically different after cleaning. Weathered wood decks lighten noticeably and regain surface texture.
+
+## When to pressure wash in Montgomery County
+
+**Spring (April–May)**: The most common time. Removes winter grime, road salt residue from the January–March season, and biological growth that established during the wet fall. Prepares outdoor surfaces for the summer months.
+
+**Fall (September–October)**: Less common but useful before winter. Removes mold and algae before it goes dormant in the cold — biological growth that's killed in fall doesn't return in spring the way untreated growth does.
+
+**Avoid freezing temperatures**: Water in cracks and surface pores can freeze and expand, which damages concrete. Don't pressure wash if there's a risk of overnight temps below 32°F within 24 hours of the job.
+
+## What surfaces Lintel cleans
+
+We clean driveways, patios and decks, siding (vinyl, brick, and fiber cement), and sidewalks and walkways. Multiple surfaces can be combined in a single booking — bundled jobs are priced accordingly.
+
+All equipment is commercial-grade. We bring the right nozzle and PSI setting for each surface type — something consumer machines often get wrong on softer materials like wood or pavers.
+
+## How it's priced
+
+Pressure washing starts at **$149** for a standard driveway or patio. The final price depends on surface area and type. Lintel shows you the exact price for your home before you confirm the booking — no post-job surprise invoices.
+
+We serve all of Montgomery County: Bethesda, Rockville, Chevy Chase, Potomac, Silver Spring, Gaithersburg, and Germantown.
+    `,
+  },
+  {
+    slug: 'signs-gutters-need-cleaning',
+    title: '5 Signs Your Gutters Need Cleaning (And What Happens If You Ignore Them)',
+    excerpt: 'Most gutter problems are invisible until they become expensive. These five warning signs tell you when it\'s time — and what\'s at stake if you wait.',
+    readTime: '4 min read',
+    date: 'April 30, 2026',
+    category: 'Tips & Advice',
+    content: `
+## Most gutter problems are invisible until they're expensive
+
+Gutters don't announce themselves when they're failing. Unlike a leaky faucet or a squeaky door, clogged gutters silently redirect water in ways you won't notice until you're dealing with fascia rot, foundation seepage, or basement flooding.
+
+These five signs are your early warning system. Each one means it's time to schedule a cleaning — or you're already overdue.
+
+## Sign 1: Water spills over the gutter edge during rain
+
+This is the most obvious sign and the one people most often dismiss. "The gutters just overflow a little when it really pours" is not a normal condition — it means the gutter is partially or fully blocked and can't carry water to the downspouts.
+
+**What it leads to**: Overflow water lands at the base of your foundation. Over months and years, this is one of the most common causes of basement water intrusion in Bethesda and Rockville's older housing stock. Water that should travel 15 feet away from your house via downspout extensions is instead pooling directly against the foundation wall.
+
+## Sign 2: Plants growing from the gutters
+
+If you can see greenery growing out of your gutters, the debris has been there long enough to accumulate soil, trap moisture, and support plant life. That's at least one full season of accumulation.
+
+**What it leads to**: The organic matter in mature debris is heavy and retains water. A single section of fully clogged gutter with wet debris can weigh 50+ pounds — far beyond what the mounting hardware was designed for. Sagging and detachment from the fascia follows.
+
+## Sign 3: Sagging gutters or visible gaps
+
+If a gutter section is visibly pulling away from the house or sagging in the middle, debris weight is likely the cause. You may also see gaps at the joints where sections connect.
+
+**What it leads to**: A sagging gutter doesn't drain to the downspout — water pools in the low spot, which accelerates corrosion on metal gutters and wood rot on the fascia board behind them. Fascia replacement is significantly more expensive than gutter cleaning.
+
+## Sign 4: Staining or streaking on siding below the gutters
+
+Dark vertical streaks running down your siding from the gutter line indicate that water is regularly overflowing and running down the exterior wall. In Bethesda colonials and Rockville brick fronts, this often appears as a brown or green stain below the roofline.
+
+**What it leads to**: Repeated moisture exposure on siding causes paint failure, wood rot on wood siding, and staining on masonry that requires professional cleaning to remove. More critically, if water is getting behind the siding, it's reaching the sheathing and framing.
+
+## Sign 5: Mosquito activity near the roofline
+
+In summer, if you notice unusual mosquito activity around the upper portion of your house, check the gutters. Standing water in blocked gutters is a productive mosquito breeding environment — a small amount of stagnant water in a clogged section can generate significant populations.
+
+**What it leads to**: Beyond the nuisance factor, this is the most visible sign that water has been sitting in your gutters long enough to be still. That same water is degrading your gutter seals, increasing rust risk in metal gutters, and contributing to the fascia moisture issues described above.
+
+## How to check your gutters without a ladder
+
+You don't need to get on the roof to assess your gutters:
+
+- **After a rain**: Watch the downspouts. If water isn't flowing out within a minute or two of rain starting, a blockage is likely somewhere upstream.
+- **From ground level**: Look for any green growth, visible debris overhang, or sagging in the gutter line.
+- **Check the downspout outlets**: If there are ground-level cleanout caps, remove and inspect. Compacted debris at the outlet is a common blockage point.
+
+If you see any of the five signs above, schedule a cleaning. Lintel serves all of Montgomery County — Bethesda, Rockville, Chevy Chase, Potomac, Silver Spring, Gaithersburg, and Germantown. Starts at $89.
+    `,
+  },
+  {
+    slug: 'window-cleaning-bethesda-md',
+    title: 'Window Cleaning in Bethesda, MD: What to Expect and What It Costs',
+    excerpt: 'A guide for Bethesda and Montgomery County homeowners — what professional window cleaning includes, how it\'s priced, and why purified water makes a real difference.',
+    readTime: '4 min read',
+    date: 'April 25, 2026',
+    category: 'Tips & Advice',
+    content: `
+## What professional window cleaning actually involves
+
+If your mental model of window cleaning is someone with a squeegee and a bucket of soapy water, the professional version is meaningfully different — especially for exterior windows.
+
+Modern professional window cleaning uses a **water-fed pole system** with purified (deionized) water. The pole extends up to 35 feet from the ground, eliminating the need for ladders on most 2-story homes. The purified water is the key: when it dries on glass, it leaves nothing behind. No minerals, no residue, no streaks. Regular tap water dries with calcium and magnesium deposits that create the "clean but still hazy" result most homeowners have experienced with DIY cleaning.
+
+For interior windows, the process is more traditional — squeegee technique with professional-grade solution — but done by someone who's cleaned hundreds of windows and knows how to do it without leaving marks.
+
+## Interior vs. exterior: what's the difference?
+
+**Exterior window cleaning** focuses on the outside pane — the surface that accumulates pollen, pollution, bird droppings, and hard water deposits from rain and sprinklers. It's typically done from outside the home using the water-fed pole.
+
+**Interior window cleaning** covers the inside pane and typically includes the window sill and frame wipe-down. It requires access inside the home.
+
+At Lintel, these are **separate bookings** with separate pricing. You can book just exterior, just interior, or both — they're completed in one visit if you book together.
+
+## Why Bethesda windows get dirty faster than you'd expect
+
+A few things specific to Montgomery County:
+
+**Pollen season**: Bethesda and the surrounding area see significant oak and maple pollen loads in April and May. Pollen is sticky and doesn't wash off in normal rain — it accumulates on glass and creates the yellowish haze visible on windows from the inside.
+
+**Hard water**: Montgomery County's water supply has measurable mineral content. Sprinklers, rain, and condensation all leave mineral deposits on exterior glass. These build up over months into a visible haze that standard cleaning products can't fully remove.
+
+**Tree coverage**: Shaded windows in Bethesda's leafy neighborhoods accumulate organic debris — sap, seed pods, decomposed leaf matter — in a way that south-facing or unshaded windows don't.
+
+## How it's priced in the Bethesda and Rockville area
+
+Professional window cleaning in Montgomery County typically runs **$100–$175** for exterior-only on a standard single-family home, and similar for interior-only. Combined interior and exterior bookings run higher.
+
+Lintel's pricing:
+
+| Service | Starting Price |
+|---------|----------------|
+| Exterior only | $119 |
+| Interior only | $119 |
+| Exterior + Interior | $219 |
+
+Final pricing is shown before you confirm the booking — based on your address and home size. No surprises.
+
+## What to do before the pro arrives
+
+For exterior cleaning, you just need to make sure the area around the house is accessible — no lawn furniture or equipment directly against the siding.
+
+For interior cleaning, it helps to clear items off window sills and move any furniture that blocks direct window access. You don't need to strip the room — just make sure the pro can stand comfortably in front of each window.
+
+## How often should you clean windows in Montgomery County?
+
+Most Bethesda homeowners clean exterior windows once or twice a year:
+
+- **Spring (April–May)**: After pollen season ends. This is the most popular time — the difference between a pollen-coated window and a just-cleaned one is dramatic.
+- **Fall (October–November)**: Before the holiday season and winter months. Interior cleaning is often added at this point.
+
+Homes near high-traffic roads, with heavy tree coverage, or with large glass areas (floor-to-ceiling windows are common in newer Bethesda construction) often benefit from more frequent exterior cleaning.
+
+Lintel pros are background-checked students from the Bethesda, Rockville, and Montgomery County area. Every job is covered under a $1M liability policy, and you confirm the work before payment is released.
+    `,
+  },
+  {
     slug: 'how-our-commission-works',
     title: 'How Lintel\'s Commission Split Works',
     excerpt: 'We believe professionals should earn a fair share. Here\'s exactly how the money moves on every Lintel job — including what happens with promo codes.',
@@ -299,6 +593,10 @@ If you have questions about your earnings or a specific payout, contact support 
 export default function Blog() {
   return (
     <div className="min-h-screen bg-white pb-20">
+      <Helmet>
+        <title>Home Service Tips &amp; Guides | Lintel Blog</title>
+        <meta name="description" content="Tips, guides, and honest advice for Bethesda and Rockville homeowners. Learn about gutter cleaning, pressure washing, window cleaning costs, and more." />
+      </Helmet>
 
       {/* Nav */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black">

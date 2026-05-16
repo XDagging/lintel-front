@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Shield, Clock, CheckCircle, ChevronRight, ArrowRight, Star } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useBookingStore } from '../store/bookingStore';
@@ -37,7 +38,7 @@ const TESTIMONIALS = [
 ];
 
 const STATS = [
-  { value: '50+',  label: 'Homes Completed' },
+  { value: '99+',  label: 'Homes Completed' },
   { value: '4.9★', label: 'Average Rating' },
   { value: '$1M',  label: 'Liability Coverage' },
   { value: '100%', label: 'Background Checked' },
@@ -61,6 +62,10 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-black" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <Helmet>
+        <title>Lintel — On-Demand Home Services | Bethesda &amp; Rockville, MD</title>
+        <meta name="description" content="Book vetted home service professionals in Bethesda, Rockville, and Montgomery County, MD. Gutter cleaning, pressure washing, window cleaning — on demand. Pay only after the job is done." />
+      </Helmet>
 
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-black/10">
@@ -267,13 +272,23 @@ export default function LandingPage() {
                     <span className="text-[11px] font-bold text-black tracking-wider uppercase">
                       From {price}
                     </span>
-                    <button
-                      onClick={() => !disabled && navigate('/quote-preview')}
-                      disabled={disabled}
-                      className="px-4 h-7 border border-black/20 text-[10px] font-bold tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-colors disabled:cursor-not-allowed"
-                    >
-                      BOOK NOW
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {(id === 'gutter-cleaning' || id === 'window-cleaning' || id === 'pressure-washing') && !disabled && (
+                        <Link
+                          to={`/services/${id}`}
+                          className="px-3 h-7 border border-black/15 text-[10px] font-bold tracking-[0.12em] uppercase text-black/50 hover:text-black hover:border-black/40 transition-colors"
+                        >
+                          LEARN MORE
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => !disabled && navigate('/quote-preview')}
+                        disabled={disabled}
+                        className="px-4 h-7 border border-black/20 text-[10px] font-bold tracking-[0.15em] uppercase text-black hover:bg-black hover:text-white transition-colors disabled:cursor-not-allowed"
+                      >
+                        BOOK NOW
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
